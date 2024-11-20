@@ -30,7 +30,9 @@ jobs:
     environment: ${{ github.ref_name == 'main' && 'Production' || github.ref_name == 'develop' && 'Development'}}
 
     env: # 環境変数
-      ENVIRONMENT: ${{ vars.APP_ENVIRONMENT }}
+      APP_ENVIRONMENT: ${{ vars.APP_ENVIRONMENT }}
+      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+
 
     steps:
       # チェックアウト
@@ -51,7 +53,7 @@ jobs:
       - name: Deploy
         uses: azure/arm-deploy@v1
         with:
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+          resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
           template: ./infra/main.bicep
           parameters: ./infra/main.bicepparam
           deploymentMode: Incremental
