@@ -31,7 +31,7 @@ jobs:
 
     env: # 環境変数
       APP_ENVIRONMENT: ${{ vars.APP_ENVIRONMENT }}
-      AZURE_RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+      AZURE_RESOURCE_GROUP_NAME: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
 
 
     steps:
