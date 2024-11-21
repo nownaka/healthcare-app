@@ -1,5 +1,6 @@
 # 参考
 # https://github.com/Azure/arm-deploy
+# https://github.com/Azure/cli
 
 name: Azure Bicep Deployment.
 
@@ -31,32 +32,40 @@ jobs:
 
     env: # 環境変数
       APP_ENVIRONMENT: ${{ vars.APP_ENVIRONMENT }}
-      AZURE_RESOURCE_GROUP_NAME: ${{ vars.AZURE_RESOURCE_GROUP_NAME }}
-
 
     steps:
       # チェックアウト
       - name: Checkout to the branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: repo
 
       # Azure ログイン
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       # リソースデプロイ
-      - name: Deploy
-        uses: azure/arm-deploy@v1
+      - name: Deploy with Azure Bicep
+        # uses: azure/arm-deploy@v1
+        # with:
+        #   resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
+        #   subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        #   template: ./infra/main.bicep
+        #   parameters: ./infra/main.bicepparam
+        #   deploymentMode: Incremental
+        #   deploymentName: Deploy_${{ env.APP_NAME }}
+        #   failOnStdErr: true
+
+        uses: azure/cli@v2
         with:
-          resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          template: ./infra/main.bicep
-          parameters: ./infra/main.bicepparam
-          deploymentMode: Incremental
-          deploymentName: Deploy_${{ env.APP_NAME }}
-          failOnStdErr: true
+          azcliversion: latest
+          inlineScript: |
+            az deployment group create \
+              --name Deploy_${{ env.APP_NAME }} \
+              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
+              --template-file infra/main.bicep \
+              --parameters infra/main.bicepparam
