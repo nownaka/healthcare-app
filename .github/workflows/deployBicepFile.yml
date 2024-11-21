@@ -47,13 +47,14 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
 
-      - name: Check directory and files.
+      - name: Check Environment.
         run: |
-          pwd
-          ls
+          echo $APP_NAME
+          echo $APP_ENVIRONMENT
+          echo $SUFFIX
 
       # リソースデプロイ
-      - name: Deploy with Azure Bicep
+      # - name: Deploy with Azure Bicep
         # uses: azure/arm-deploy@v1
         # with:
         #   resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
@@ -64,12 +65,12 @@ jobs:
         #   deploymentName: Deploy_${{ env.APP_NAME }}
         #   failOnStdErr: true
 
-        uses: azure/cli@v2
-        with:
-          azcliversion: latest
-          inlineScript: |
-            az deployment group create \
-              --name Deploy_${{ env.APP_NAME }} \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
-              --template-file infra/main.bicep \
-              --parameters infra/main.bicepparam
+        # uses: azure/cli@v2
+        # with:
+        #   azcliversion: latest
+        #   inlineScript: |
+        #     az deployment group create \
+        #       --name Deploy_${{ env.APP_NAME }} \
+        #       --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
+        #       --template-file infra/main.bicep \
+        #       --parameters infra/main.bicepparam
