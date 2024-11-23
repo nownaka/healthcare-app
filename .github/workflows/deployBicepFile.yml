@@ -34,6 +34,12 @@ jobs:
       APP_ENVIRONMENT: ${{ vars.APP_ENVIRONMENT }}
 
     steps:
+      # タイムスタンプ生成
+      - name: Generate timestamp
+        env:
+          TZ: "Asia/Tokyo"
+        run: echo "TIMESTAMP=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_ENV
+
       # チェックアウト
       - name: Checkout to the branch
         uses: actions/checkout@v4
@@ -46,25 +52,14 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-
       # リソースデプロイ
       - name: Deploy with Azure Bicep
-        # uses: azure/arm-deploy@v1
-        # with:
-        #   resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-        #   subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        #   template: ./infra/main.bicep
-        #   parameters: ./infra/main.bicepparam
-        #   deploymentMode: Incremental
-        #   deploymentName: Deploy_${{ env.APP_NAME }}
-        #   failOnStdErr: true
-
         uses: azure/cli@v2
         with:
           azcliversion: latest
           inlineScript: |
             az deployment group create \
-              --name Deploy_${{ env.APP_NAME }} \
+              --name Deploy-${{ env.APP_NAME }}_${{ env.TIMESTAMP }} \
               --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
               --template-file infra/main.bicep \
               --parameters infra/main.bicepparam
