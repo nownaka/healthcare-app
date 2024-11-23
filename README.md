@@ -13,7 +13,7 @@
 
 ## 手順
 
-コマンドは Azure CloudShell または、Azure CLI がインストールされた PC で実行すす。
+コマンドは Azure CloudShell または Azure CLI がインストールされた PC で実行する。
 
 ### 1. リポジトリのフォーク
 
@@ -105,14 +105,17 @@ az ad app federated-credential create --id $id --parameters $federation
 
 下記を GitHub リポジトリのシークレットとして登録する。
 
-| No  | シークレット              | 説明                                     |
-| --- | ------------------------- | ---------------------------------------- |
-| 1   | AZURE_TENANT_ID           | Entra ID のテナント GUID                 |
-| 2   | AZURE_SUBSCRIPTION_ID     | Azure サブスクリプション ID              |
-| 3   | AZURE_CLIENT_ID           | クライアント ID。アプリ登録の際に生成。  |
-| 4   | AZURE_RESOURCE_GROUP_NAME | リソースをデプロイするリソースグループ名 |
+| No  | 種別         | 名前                      | 説明                                     |
+| --- | ------------ | ------------------------- | ---------------------------------------- |
+| 1   | シークレット | AZURE_TENANT_ID           | Entra ID のテナント GUID                 |
+| 2   | シークレット | AZURE_SUBSCRIPTION_ID     | Azure サブスクリプション ID              |
+| 3   | シークレット | AZURE_CLIENT_ID           | クライアント ID。アプリ登録の際に生成。  |
+| 4   | シークレット | AZURE_RESOURCE_GROUP_NAME | リソースをデプロイするリソースグループ名 |
+| 5   | 変数         | APP_NAME                  | アプリ名。リソースの命名に利用。         |
+| 6   | 変数         | APP_ENVIRONMENT           | デプロイ環境。リソースの命名に利用。     |
+| 7   | 変数         | SUFFIX                    | サフィックス。リソースの命名に利用。     |
 
-各値は下記コマンドで取得する。
+No 1 - 4 の各値は下記コマンドで取得する。
 
 ```bash
 # AZURE_TENANT_ID
