@@ -61,11 +61,11 @@ spObjectId=$(az ad sp create --id $appId --query id --output tsv)
 
 - Azure ロール: 1.で作成したリソースグループスコープでの**所有者**もしくは**ユーザーアクセス管理者**
 
-サービスプリンシパルには、**共同作成者**を割り当てる。
+サービスプリンシパルには、**所有者**を割り当てる。
 
 ```bash
 # ロール：
-roleNameOrId=b24988ac-6180-42a0-ab88-20f7382dd24c
+roleNameOrId=8e3af657-a8ff-443c-a75c-2fe8c4bcb635
 # スコープ：作成したリソースグループ
 scope=$resourceGroupId
 # 割り当て先：作成したサービスプリンシパル
@@ -83,18 +83,20 @@ az role assignment create --role $roleNameOrId --assignee $assignee --scope $sco
 githubAccountName='{your github account name}'
 # リポジトリ名
 githubRepositoryName='{your fork destination repository name}'
+# エンティティ（リポジトリの環境に合わせて変更する）
+# 例：environment:Production
+entity=environment:Production
 # フェデレーション資格情報を設定する対象
 id=$appId
 
 # フェデレーション資格情報の定義
 federation='{
-    "name": "github_federation_for_{githubRepositoryName}",
-    "issuer": "<https://token.actions.githubusercontent.com>",
-    "subject": "repo:{githubAccountName}/{githubRepositoryName}:ref:refs/heads/main",
+    "name": "github_federation_for_'$githubRepositoryName''$entity'",
+    "issuer": "https://token.actions.githubusercontent.com",
+    "subject": "repo:'$githubAccountName'/'$githubRepositoryName':'$entity'",
     "audiences": ["api://AzureADTokenExchange"]
 }'
-federation=${federation//'{githubAccountName}'/$githubAccountName}
-federation=${federation//'{githubRepositoryName}'/$githubRepositoryName}
+federation=$(echo "$federation"| sed ':a;N;s/[[:space:]]//g;ba')
 
 # フェデレーション資格情報の設定
 az ad app federated-credential create --id $id --parameters $federation
