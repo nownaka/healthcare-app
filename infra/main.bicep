@@ -30,8 +30,10 @@ param containerAppsEnvironmentName string = 'cae-${resourceBaseName}'
 param userAssignedIdentityName string = 'id-${resourceBaseName}'
 @description('Resource name of Azure Container Apps.')
 param containerAppNames string[] = [
-  join(split(join(concat(['ca', appName, 'front'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
-  join(split(join(concat(['ca', appName, 'back'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
+  join(split(join(concat(['ca', appName, 'react'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
+  join(split(join(concat(['ca', appName, 'django'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
+  join(split(join(concat(['ca', appName, 'pgsql'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
+
 ]
 
 @description('Role definition to assign.')
