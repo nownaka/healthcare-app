@@ -11,6 +11,8 @@ on:
     branches:
       - main
       - develop
+    paths:
+      - "infra/**"
 
   # 手動
   workflow_dispatch:
