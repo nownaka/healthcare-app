@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  # database
+  db:
+    # image: postgres
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.psdb
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    command: >
+      bash -c "
+        python manage.py migrate && 
+        python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+
+  # frontend
+  frontend:
+    build:
+      context: ./frontend/react
+      dockerfile: ../Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
