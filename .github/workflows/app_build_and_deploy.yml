@@ -63,8 +63,7 @@ jobs:
 
       - name: Build and push container image to registry
         run: |
-          REPOSITORY_NAME=$(echo ${{ github.repository }} | sed -e "s#.*/##")
-          echo "REPOSITORY_NAME=$REPOSITORY_NAME" >> $GITHUB_ENV
+          echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | sed -e "s#.*/##")" >> $GITHUB_ENV
 
           docker-compose -f ./docker-compose.yml build
           docker tag ${{ env.REPOSITORY_NAME }}-frontend:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
