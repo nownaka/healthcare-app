@@ -61,9 +61,9 @@ jobs:
       - name: Build and push container image to registry
         run: |
           docker-compose -f ./docker-compose.yml build
-          docker tag ${{ vars.CONTAINER_NAME_FRONTEND }}:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
-          docker tag ${{ vars.CONTAINER_NAME_BACKEND }}:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_BACKEND }}:${{ github.sha }}
-          docker tag ${{ vars.CONTAINER_NAME_DB }}:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_DB }}:${{ github.sha }}
+          docker tag frontend:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
+          docker tag backend:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_BACKEND }}:${{ github.sha }}
+          docker tag db:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_DB }}:${{ github.sha }}
           docker push ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
           docker push ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_BACKEND }}:${{ github.sha }}
           docker push ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_DB }}:${{ github.sha }}
