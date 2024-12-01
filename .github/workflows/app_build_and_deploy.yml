@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 env:
-  REPOSITORY_NAME: REPOSITORY=$(echo ${{ github.repository }} | sed -e "s#.*/##")
+  REPOSITORY_NAME: $(echo ${{ github.repository }} | sed -e "s#.*/##")
 
 jobs:
   build:
@@ -63,8 +63,6 @@ jobs:
 
       - name: Build and push container image to registry
         run: |
-          echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | sed -e "s#.*/##")" >> $GITHUB_ENV
-
           docker-compose -f ./docker-compose.yml build
           docker tag ${{ env.REPOSITORY_NAME }}-frontend:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
           docker tag ${{ env.REPOSITORY_NAME }}-backend:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_BACKEND }}:${{ github.sha }}
