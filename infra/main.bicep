@@ -30,9 +30,9 @@ param containerAppsEnvironmentName string = 'cae-${resourceBaseName}'
 param userAssignedIdentityName string = 'id-${resourceBaseName}'
 @description('Resource name of Azure Container Apps.')
 param containerAppNames string[] = [
-  join(split(join(concat(['ca', appName, 'react'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
-  join(split(join(concat(['ca', appName, 'django'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
-  join(split(join(concat(['ca', appName, 'pgsql'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
+  join(split(join(concat(['ca', appName, 'front'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
+  join(split(join(concat(['ca', appName, 'back'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
+  join(split(join(concat(['ca', appName, 'db'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
 
 ]
 
@@ -129,17 +129,44 @@ var _resistories = [
     identity: userAssignedIdentity.outputs.resourceId
     server: _registryServer
 }]
+var _containerAppsConfigs = [
+  {
+    // frontend
+    name: containerAppNames[0]
+    ingress: {
+      external: true
+      targetPort: 3000
+    }
+  }
+  {
+    // backend
+    name: containerAppNames[1]
+    ingress: {
+      external: true
+      targetPort: 8000
+    }
+  }
+  {
+    // backend
+    name: containerAppNames[2]
+    ingress: {
+      external: false
+      targetPort: 5432
+    }
+  }
+]
 
 @description('Azure Container App')
-module containerApps './modules/containerapps.bicep' = [for name in containerAppNames: {
-  name: 'Deploy-ContainerApp-${guid(resourceGroup().id, name)}'
+module containerApps './modules/containerapps.bicep' = [for config in _containerAppsConfigs: {
+  name: 'Deploy-ContainerApp-${guid(resourceGroup().id, config.name)}'
   params: {
     containerappLocation: location
-    containerappName: name
+    containerappName: config.name
     environmentId: containerAppsEnvironment.outputs.resourceId
     registryServer: _registryServer
     managedIdentity: _managedIdentity
     registries: _resistories
+    ingress: config.ingress
   }
 }]
 
