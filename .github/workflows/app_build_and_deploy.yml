@@ -1,4 +1,4 @@
-name: Auto deployment for Azure Container Apps.
+name: Auto Build and Push to Azure Container Services.
 
 # When this action will be executed
 on:
@@ -27,6 +27,15 @@ jobs:
 
     # Switch environments depending on branch
     environment: ${{ github.ref_name == 'main' && 'Production' || github.ref_name == 'develop' && 'Development'}}
+
+    env:
+      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      DJANGO_SUPERUSER_USERNAME: ${{ secrets.DJANGO_SUPERUSER_USERNAME }}
+      DJANGO_SUPERUSER_PASSWORD: ${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
+      DJANGO_SUPERUSER_EMAIL: ${{ secrets.DJANGO_SUPERUSER_EMAIL }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
 
     steps:
       - name: Checkout to the branch
