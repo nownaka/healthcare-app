@@ -152,6 +152,7 @@ var _containerAppsConfigs = [
     ingress: {
       external: false
       targetPort: 5432
+      transport: 'Tcp'
     }
   }
 ]
