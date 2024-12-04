@@ -1,0 +1,10 @@
+services:
+  # Bicep Deploy
+  deploy_resource:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    platform: linux/x86_64
+    env_file: .env
+    volumes:
+      - .:/infra
