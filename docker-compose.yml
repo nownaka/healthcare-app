@@ -1,11 +1,11 @@
 services:
   # database
-  db:
+  database:
     # image: postgres
-    container_name: db
+    container_name: database
     build:
-      context: ./backend
-      dockerfile: Dockerfile.database
+      context: ./database
+      dockerfile: Dockerfile
       args:
         POSTGRES_USER: ${POSTGRES_USER}
         POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -20,7 +20,7 @@ services:
     container_name: backend
     build:
       context: ./backend
-      dockerfile: Dockerfile.backend
+      dockerfile: Dockerfile
       args:
         DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
         DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
@@ -43,8 +43,8 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: ./frontend/react
-      dockerfile: ../Dockerfile.frontend
+      context: ./frontend/app
+      dockerfile: ../Dockerfile
     restart: always
     ports:
       - "3000:3000"
