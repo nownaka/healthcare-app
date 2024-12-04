@@ -4,6 +4,38 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Healthcare App: docker-compose up",
+      "type": "docker-compose",
+      "dockerCompose": {
+        "up": {
+          "detached": true,
+          "build": true
+        },
+        "files": [
+          "${workspaceFolder}/docker-compose.yml",
+          "${workspaceFolder}/docker-compose.dev.yml"
+        ],
+        "envFiles": ["backend/.env"],
+        "projectName": "healthcare-app"
+      }
+    },
+    {
+      "label": "Healthcare App: docker-compose down",
+      "type": "docker-compose",
+      "dockerCompose": {
+        "down": {
+          "removeImages": "all",
+          "removeVolumes": true
+        },
+        "files": [
+          "${workspaceFolder}/docker-compose.yml",
+          "${workspaceFolder}/docker-compose.dev.yml"
+        ],
+        "envFiles": ["backend/.env"],
+        "projectName": "healthcare-app"
+      }
+    },
+    {
       "label": "Azure Bicep Deployment",
       "type": "shell",
       "command": "docker compose -f ${workspaceFolder}/infra/docker-compose.yml run --rm deploy_resource sh ./scripts/azure-bicep-deployments.sh"

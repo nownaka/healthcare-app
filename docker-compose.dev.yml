@@ -1,0 +1,20 @@
+# docker-compose.yml をベースに開発用に設定を追加、上書き
+
+services:
+  # database
+  database:
+    env_file:
+      - backend/.env
+
+  # backend
+  backend:
+    env_file:
+      - backend/.env
+    depends_on:
+      database:
+        condition: service_healthy
+
+  # frontend
+  frontend:
+    volumes:
+      - ./frontend/app:/app
