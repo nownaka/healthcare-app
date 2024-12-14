@@ -27,6 +27,7 @@ services:
       - ./backend/.env
     volumes:
       - ./backend/app:/code/app
+      - ./backend/basicapi:/code/basicapi
       - ./backend/.env:/code/.env
       - ./backend/manage.py:/code/manage.py
       - ./backend/requirements.txt:/code/requirements.txt

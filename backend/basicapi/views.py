@@ -24,17 +24,20 @@ class CreateUserView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         print(serializer)  # シリアライザーインスタンスをデバッグ表示
 
-        # バリデーションを実行し、エラーがあれば例外を発生させる
-        serializer.is_valid(raise_exception=True)
+        try:
+            # バリデーションを実行し、エラーがあれば例外を発生させる
+            serializer.is_valid(raise_exception=True)
 
-        # ユーザーをデータベースに保存し、インスタンスを取得
-        user = self.perform_create(serializer)
+            # ユーザーをデータベースに保存し、インスタンスを取得
+            user = self.perform_create(serializer)
 
-        # 新規ユーザーをログインさせる（セッション管理）
-        login(request, user)
+            # 新規ユーザーをログインさせる（セッション管理）
+            login(request, user)
 
-        # 成功レスポンスを返す。登録されたユーザー情報を返却
-        return Response({'user': UserSerializer(user, context=self.get_serializer_context()).data})
+            # 成功レスポンスを返す。登録されたユーザー情報を返却
+            return Response({'user': UserSerializer(user, context=self.get_serializer_context()).data})
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # シリアライザーを使用してユーザーを作成するメソッド
     def perform_create(self, serializer):
