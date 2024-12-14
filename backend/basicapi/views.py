@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import authenticate, login
 from .serializers import UserSerializer
+import logging
 
 # ユーザー登録を行うエンドポイントのクラスビュー
 class CreateUserView(generics.CreateAPIView):
@@ -43,30 +44,36 @@ class CreateUserView(generics.CreateAPIView):
     def perform_create(self, serializer):
         # save() を呼び出してデータを保存し、インスタンスを返す
         return serializer.save()
-
+    
+logger = logging.getLogger(__name__)
 # ユーザーログインを行うエンドポイントのクラスビュー
 class LoginUserView(generics.CreateAPIView):
-    # 使用するシリアライザーを指定（認証後にユーザー情報を返すため）
     serializer_class = UserSerializer
-    # このエンドポイントは認証不要でアクセス可能
     permission_classes = [AllowAny]
 
-    # POSTリクエストを処理する
     def post(self, request, *args, **kwargs):
-        # リクエストデータから username と password を取得
-        username = request.data.get('username')
-        password = request.data.get('password')
+        try:
+            # リクエストデータをログに出力
+            logger.debug(f"Received data: {request.data}")
 
-        # ユーザー認証を試みる（Djangoの authenticate を使用）
-        user = authenticate(request, username=username, password=password)
+            username = request.data.get('username')
+            password = request.data.get('password')
+            print(username)
+            print(password)
 
-        # 認証成功時
-        if user:
-            # ログイン処理（セッション開始）
-            login(request, user)
+            # ユーザー認証を試みる
+            user = authenticate(request, username=username, password=password)
 
-            # 成功レスポンスを返す。ログインしたユーザー情報を返却
-            return Response({'user': UserSerializer(user, context=self.get_serializer_context()).data})
+            if user:
+                # 認証成功時
+                login(request, user)
+                logger.debug(f"Login successful for user: {username}")
+                return Response({'message': 'ログインに成功しました。'}, status=status.HTTP_200_OK)
 
-        # 認証失敗時のエラーレスポンス（HTTP 401 Unauthorized）
-        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            # 認証失敗時
+            logger.warning(f"Login failed for user: {username}")
+            return Response({'error': 'ログインに失敗しました。ユーザー名またはパスワードが正しくありません。'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        except Exception as e:
+            logger.error(f"An error occurred: {str(e)}", exc_info=True)
+            return Response({'error': f'サーバー内部エラーが発生しました: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
