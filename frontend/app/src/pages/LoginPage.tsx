@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import "./App.css";
+import "./LoginPage.css";
 
-const App = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = (e: any) => {
     e.preventDefault();
     setError("");
 
@@ -53,4 +53,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default LoginPage;
