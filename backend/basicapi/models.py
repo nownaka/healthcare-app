@@ -1,11 +1,23 @@
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
 
-# Create your models here.
-# アプリに接続する用のユーザーテーブル
+# 独自のユーザーモデル（新しいユーザー管理用のテーブル）
 class User(models.Model):
-    username = models.CharField(max_length=150, unique=True)  # ユーザー名　一意の値になるようunique=True
-    password = models.CharField(max_length=128)  # パスワード (ハッシュ化を推奨)
-    date_joined = models.DateTimeField(auto_now_add=True)  # 登録した日
-    last_login = models.DateTimeField(null=True, blank=True) # 必須: Django の認証システムが利用する last_login フィールド
+    # ユーザー名を格納するフィールド（重複不可）
+    username = models.CharField(max_length=150, unique=True)  # unique=Trueで一意の値になる
+    # パスワードを格納するフィールド（ハッシュ化して保存）
+    password = models.CharField(max_length=128)  # 最大128文字のパスワードフィールド
+    # ユーザー登録日時を記録するフィールド（自動的に現在時刻をセット）
+    date_joined = models.DateTimeField(auto_now_add=True)  # 新規作成時のみ自動的に日付を保存
+    # 最後にログインした日時を記録するフィールド（nullと空白を許可）
+    last_login = models.DateTimeField(null=True, blank=True)
+    # パスワードをハッシュ化して保存するメソッド
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)  # 入力されたパスワードをハッシュ化
+    # 入力されたパスワードが保存されているハッシュ化パスワードと一致するかを確認するメソッド
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)  # パスワードが正しいかをチェック
+
+    # オブジェクトを文字列として表示する際に使われるメソッド
     def __str__(self):
-        return self.username
+        return self.username  # ユーザー名を表示する
