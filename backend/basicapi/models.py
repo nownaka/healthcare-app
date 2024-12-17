@@ -11,6 +11,9 @@ class User(models.Model):
     date_joined = models.DateTimeField(auto_now_add=True)  # 新規作成時のみ自動的に日付を保存
     # 最後にログインした日時を記録するフィールド（nullと空白を許可）
     last_login = models.DateTimeField(null=True, blank=True)
+    # アカウントがアクティブか判定
+    is_active = models.BooleanField(default=True)
+
     # パスワードをハッシュ化して保存するメソッド
     def set_password(self, raw_password):
         self.password = make_password(raw_password)  # 入力されたパスワードをハッシュ化
