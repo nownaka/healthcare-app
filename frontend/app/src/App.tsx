@@ -1,7 +1,8 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./components/pages/LoginPage";
+import HomePage from "./components/pages/HomePage";
 
 function App() {
   return (
@@ -21,7 +22,9 @@ function App() {
     //     </a>
     //   </header>
     // </div>
-    <LoginPage />
+    <>
+      <LoginPage />
+    </>
   );
 }
 
