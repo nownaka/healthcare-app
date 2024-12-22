@@ -11,7 +11,9 @@ const Input = (input: Input) => {
     const value = input.value
     const placeholder = input.placeholder
     const onChange = input.onChange
-    return <input type={type} value={value} placeholder={placeholder} onChange={onChange} />
+    return (
+        <input type={type} value={value} placeholder={placeholder} onChange={onChange} />
+    )
 }
 
 export default Input

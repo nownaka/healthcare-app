@@ -13,7 +13,12 @@ const Button = (button: Button) => {
     const className = button.className
     const onClick = button.onClick
 
-    return <button type={type} className={className} onClick={onClick}>{ label }</button>
+    return (
+        <button
+            type={type} className={className} onClick={onClick}>
+            {label}
+        </button>
+    )
 
 }
 
