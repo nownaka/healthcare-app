@@ -3,7 +3,7 @@ type Button = {
     label: string
     type:  "submit" | "reset" | "button" | undefined
     className: string | undefined
-    onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    onClick: React.MouseEventHandler<HTMLButtonElement> | undefined
 }
 
 
