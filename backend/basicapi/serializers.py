@@ -1,6 +1,10 @@
 from rest_framework import serializers
 from .models import CustomUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+import logging
+
+# ロガーを取得
+logger = logging.getLogger('django')
 
 # ユーザー登録用シリアライザ
 class RegisterSerializer(serializers.ModelSerializer):
@@ -22,6 +26,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
+        logger.debug(f"CustomTokenObtainPairSerializer.get_token called for user: {user.email}")
         token = super().get_token(user)
         token['email'] = user.email  # カスタムクレーム
         return token

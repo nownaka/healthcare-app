@@ -9,17 +9,22 @@ const Login: React.FC = () => {
   // ログイン処理関数
   const handleLogin = async () => {
     try {
-      // リクエストの型とレスポンスの型を定義
-      const response = await axios.post<{ access: string; refresh: string }>('http://localhost:8000/api/token/', {
-        email, // フィールド名を email に変更
-        password,
-      });
-
-      // トークンをログに出力（実際には保存処理を追加する必要があります）
+      const response = await axios.post<{ access: string; refresh: string }>(
+        'http://localhost:8000/api/token/',
+        { email, password },
+        { headers: { 'Content-Type': 'application/json' } } // ヘッダーを明示的に指定
+      );
+  
+      // トークンをログに出力（後で保存処理を追加する）
       console.log('Access Token:', response.data.access);
       console.log('Refresh Token:', response.data.refresh);
     } catch (error: any) {
-      console.error('Login failed:', error.response?.data?.error || 'Unknown error');
+      if (error.response) {
+        console.error('Status Code:', error.response.status);
+        console.error('Error Data:', error.response.data);
+      } else {
+        console.error('Unknown Error:', error);
+      }
     }
   };
 

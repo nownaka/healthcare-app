@@ -174,3 +174,30 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True, #リフレッシュ トークン送信時に新しいリフレッシュトークンを取得できる
     'UPDATE_LAST_LOGIN': True, #ログイン時に auth_user テーブルの last_login フィールドが更新される
 }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
