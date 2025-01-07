@@ -1,41 +1,34 @@
+import logging
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, generics
-from .models import User
-from .serializers import UserSerializer
-from django.utils import timezone  # 最後のログイン時間を更新するため
+from rest_framework import status
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer
 
-# ユーザー登録用のAPIエンドポイント
-class CreateUserView(generics.CreateAPIView):
-    """
-    新規ユーザーを登録するためのAPIビュー
-    """
-    queryset = User.objects.all()  # ユーザーのデータを対象とする
-    serializer_class = UserSerializer  # 使用するシリアライザを指定
+# ログ設定
+logger = logging.getLogger(__name__)
 
-# ユーザーログイン用のAPIエンドポイント
-class LoginUserView(generics.CreateAPIView):
-    """
-    ユーザーログインを行うためのAPIビュー
-    """
-    def post(self, request, *args, **kwargs):
-        # リクエストからユーザー名とパスワードを取得
-        username = request.data.get('username')
-        password = request.data.get('password')
+# ユーザー登録用ビュー
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(
+                    {"message": "User registered successfully!"},
+                    status=status.HTTP_201_CREATED
+                )
+            except Exception as e:
+                logger.error(f"Error during user registration: {e}", exc_info=True)
+                return Response(
+                    {"error": "An unexpected error occurred during registration."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+        # エラー内容をログに記録
+        logger.warning(f"Validation failed: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            # ユーザー名でデータベースからユーザーを取得
-            user = User.objects.get(username=username)
-            
-            # パスワードが正しいか確認する
-            if user.check_password(password):
-                # パスワードが正しければ、最終ログイン時間を更新
-                user.last_login = timezone.now()
-                user.save()
-                return Response({'message': 'ログイン成功'}, status=status.HTTP_200_OK)
-            else:
-                # パスワードが間違っている場合
-                return Response({'error': 'パスワードが正しくありません'}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        except User.DoesNotExist:
-            # ユーザー名がデータベースに存在しない場合
-            return Response({'error': 'ユーザーが存在しません'}, status=status.HTTP_401_UNAUTHORIZED)
+# JWT トークン発行ビュー
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

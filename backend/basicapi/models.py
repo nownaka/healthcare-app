@@ -1,26 +1,38 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.contrib.auth.hashers import make_password, check_password
 
-# 独自のユーザーモデル（新しいユーザー管理用のテーブル）
-class User(models.Model):
-    # ユーザー名を格納するフィールド（重複不可）
-    username = models.CharField(max_length=150, unique=True)  # unique=Trueで一意の値になる
-    # パスワードを格納するフィールド（ハッシュ化して保存）
-    password = models.CharField(max_length=128)  # 最大128文字のパスワードフィールド
-    # ユーザー登録日時を記録するフィールド（自動的に現在時刻をセット）
-    date_joined = models.DateTimeField(auto_now_add=True)  # 新規作成時のみ自動的に日付を保存
-    # 最後にログインした日時を記録するフィールド（nullと空白を許可）
-    last_login = models.DateTimeField(null=True, blank=True)
-    # アカウントがアクティブか判定
+# カスタムマネージャー
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("The Email field must be set")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)  # パスワードをハッシュ化
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(email, password, **extra_fields)
+
+# カスタムユーザーモデル
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
-    # パスワードをハッシュ化して保存するメソッド
-    def set_password(self, raw_password):
-        self.password = make_password(raw_password)  # 入力されたパスワードをハッシュ化
-    # 入力されたパスワードが保存されているハッシュ化パスワードと一致するかを確認するメソッド
-    def check_password(self, raw_password):
-        return check_password(raw_password, self.password)  # パスワードが正しいかをチェック
+    objects = CustomUserManager()
 
-    # オブジェクトを文字列として表示する際に使われるメソッド
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
     def __str__(self):
-        return self.username  # ユーザー名を表示する
+        return self.email

@@ -164,8 +164,11 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
+AUTH_USER_MODEL = 'basicapi.CustomUser'
+
 
 SIMPLE_JWT = {
+    
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=10), #トークンの有効期限を10時間に設定
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7), #リフレッシュトークンの有効期限を７日間に設定
     'ROTATE_REFRESH_TOKENS': True, #リフレッシュ トークン送信時に新しいリフレッシュトークンを取得できる
