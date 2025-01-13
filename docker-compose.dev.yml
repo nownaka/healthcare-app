@@ -4,12 +4,17 @@ services:
   # database
   database:
     env_file:
-      - backend/.env
+      - ./backend/.env
 
   # backend
   backend:
     env_file:
-      - backend/.env
+      - ./backend/.env
+    volumes:
+      - ./backend/app:/code/app
+      - ./backend/.env:/code/.env
+      - ./backend/manage.py:/code/manage.py
+      - ./backend/requirements.txt:/code/requirements.txt
     depends_on:
       database:
         condition: service_healthy

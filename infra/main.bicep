@@ -124,49 +124,62 @@ var _managedIdentity = {
   userAssignedIdentities: { '${userAssignedIdentity.outputs.resourceId}' : {}}
 }
 var _registryServer = containerRegistry.outputs.loginServer
-var _resistories = [
+var _registries = [
   {
     identity: userAssignedIdentity.outputs.resourceId
     server: _registryServer
 }]
-var _containerAppsConfigs = [
+var _ingress = [
   {
     // frontend
-    name: containerAppNames[0]
-    ingress: {
-      external: true
-      targetPort: 3000
-    }
+    external: true
+    targetPort: 3000
   }
   {
     // backend
-    name: containerAppNames[1]
-    ingress: {
-      external: true
-      targetPort: 8000
-    }
+    external: true
+    targetPort: 8000
   }
   {
     // backend
-    name: containerAppNames[2]
-    ingress: {
-      external: false
-      targetPort: 5432
-      transport: 'Tcp'
-    }
+    external: false
+    targetPort: 5432
+    transport: 'Tcp'
   }
 ]
+var _containerAppsConfigs = [for (name, index) in containerAppNames: {
+  name: name
+  template: {
+    containers: [
+      {
+        name: name
+        image: 'mcr.microsoft.com/k8se/quickstart:latest'  
+        command: []
+        args: []
+        resources: {
+            cpu: '0.25'
+            memory: '.5Gi'
+        }
+      }
+    ]
+    scale: {
+      minReplicas: 1
+    }
+  }
+  ingress: _ingress[index]
+}]
 
 @description('Azure Container App')
-module containerApps './modules/containerapps.bicep' = [for config in _containerAppsConfigs: {
+module containerApps './modules/containerapps.bicep' = [for (config, index) in _containerAppsConfigs: {
   name: 'Deploy-ContainerApp-${guid(resourceGroup().id, config.name)}'
   params: {
-    containerappLocation: location
-    containerappName: config.name
+    containerAppLocation: location
+    containerAppName: config.name
     environmentId: containerAppsEnvironment.outputs.resourceId
     registryServer: _registryServer
     managedIdentity: _managedIdentity
-    registries: _resistories
+    template: config.template
+    registries: _registries
     ingress: config.ingress
   }
 }]

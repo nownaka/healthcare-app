@@ -21,16 +21,26 @@ ENV POSTGRES_USER=${POSTGRES_USER}
 ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 ENV POSTGRES_HOST=${POSTGRES_HOST}
 
+# ディレクトリ作成
 RUN mkdir /code
 
+# ディレクトリ変更
 WORKDIR /code
 
-ADD requirements.txt /code/
+# requirements.txt をコピー
+COPY requirements.txt /code/
 
+# パッケージインストール
 RUN pip install -r requirements.txt
 
-ADD . /code/
+# プロジェクトファイルをコピー
+COPY . /code/
 
+# 実行権限を付与
+RUN chmod +x /code/scripts/create_superuser.sh
+
+# 公開ポート
 EXPOSE 8000
 
-CMD ["bash", "-c", "python manage.py migrate && python manage.py createsuperuser --noinput && python manage.py runserver 0.0.0.0:8000"]
+# 起動コマンド
+CMD ["sh", "-c", "python manage.py migrate && sh scripts/create_superuser.sh && python manage.py runserver 0.0.0.0:8000"]

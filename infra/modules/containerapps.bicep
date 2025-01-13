@@ -7,9 +7,9 @@
 // Params
 // --------------------------------------------------------------------------------
 @description('Resource name of Azure Container Apps.')
-param containerappName string
+param containerAppName string
 @description('Resource deployment region.')
-param containerappLocation string
+param containerAppLocation string
 @description('Resource tags.')
 param tags object = {}
 
@@ -18,7 +18,7 @@ param managedIdentity { type: string, userAssignedIdentities: object? } = {
   type: 'SystemAssigned'
 }
 @description('Ingress configurations.')
-param ingress { external: bool, targetPort: int } = {
+param ingress { external: bool, targetPort: int, transport: string? } = {
   external: true
   targetPort: 80
 }
@@ -31,19 +31,24 @@ param registries { identity: string?, passwordSecretRef: string?, server: string
     server: registryServer
   }
 ]
-@description('List of container definitions for the Container App.')
-param containers object[] = [
-  {
-    name: containerappName
-    image: 'mcr.microsoft.com/k8se/quickstart:latest'  
-    command: []
-    args: []
-    resources: {
-        cpu: '0.25'
-        memory: '.5Gi'
+@description('Container App versioned application definition.')
+param template object = {
+  containers: [
+    {
+      name: containerAppName
+      image: 'mcr.microsoft.com/k8se/quickstart:latest'  
+      command: []
+      args: []
+      resources: {
+          cpu: '0.25'
+          memory: '.5Gi'
+      }
     }
+  ]
+  scale: {
+    minReplicas: 0
   }
-]
+}
 @description('Resource ID of environment.')
 param environmentId string
 @description('Workload profile name to pin for container app execution.')
@@ -54,9 +59,9 @@ param workloadProfileName string = 'Consumption'
 // Resources
 // --------------------------------------------------------------------------------
 @description('Azure Container App.')
-resource containerapp 'Microsoft.App/containerApps@2024-03-01' = {
-  name: containerappName
-  location: containerappLocation
+resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
+  name: containerAppName
+  location: containerAppLocation
   tags: tags
   identity: managedIdentity
   properties: {
@@ -65,12 +70,7 @@ resource containerapp 'Microsoft.App/containerApps@2024-03-01' = {
       registries: registries
     }
     environmentId: environmentId
-    template: {
-      containers: containers
-      scale: {
-        minReplicas: 0
-      }
-    }
+    template: template
     workloadProfileName: workloadProfileName
   }
 }
@@ -80,6 +80,6 @@ resource containerapp 'Microsoft.App/containerApps@2024-03-01' = {
 // Outputs
 // --------------------------------------------------------------------------------
 @description('Resource Id of Azure Container App.')
-output resourceId string = containerapp.id
+output resourceId string = containerApp.id
 @description('Resource name of Azure Container App.')
-output name string = containerapp.name
+output name string = containerApp.name
