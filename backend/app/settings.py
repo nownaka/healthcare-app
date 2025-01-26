@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
+from datetime import timedelta
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,9 +27,10 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    os.getenv('DJANGO_ALLOWED_HOSTS')
-]
+# ALLOWED_HOSTS = [
+#     os.getenv('DJANGO_ALLOWED_HOSTS')
+# ]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 CSRF_TRUSTED_ORIGINS = [
     os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS')
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'basicapi',
     'corsheaders', #追加
+    'rest_framework_simplejwt',#追加
 ]
 
 MIDDLEWARE = [
@@ -152,3 +156,48 @@ CORS_ALLOWED_ORIGINS = os.environ.get("TRUSTED_ORIGINS").split(" ")
 # プリフライト(事前リクエスト)の設定
 # 30分だけ許可
 CORS_PREFLIGHT_MAX_AGE = 60 * 30
+
+#########################認証機能として追加した部分　241218府川######################
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+AUTH_USER_MODEL = 'basicapi.CustomUser'
+
+
+SIMPLE_JWT = {
+    
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=10), #トークンの有効期限を10時間に設定
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7), #リフレッシュトークンの有効期限を７日間に設定
+    'ROTATE_REFRESH_TOKENS': True, #リフレッシュ トークン送信時に新しいリフレッシュトークンを取得できる
+    'UPDATE_LAST_LOGIN': True, #ログイン時に auth_user テーブルの last_login フィールドが更新される
+}
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

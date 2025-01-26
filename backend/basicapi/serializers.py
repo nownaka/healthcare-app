@@ -1,8 +1,32 @@
 from rest_framework import serializers
-from .models import User
+from .models import CustomUser
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+import logging
 
-class UserSerializer(serializers.ModelSerializer):
+# ロガーを取得
+logger = logging.getLogger('django')
+
+# ユーザー登録用シリアライザ
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
-        model = User
-        fields = ('username', 'password')
-        extra_kwargs = {'password': {'write_only': True}}
+        model = CustomUser
+        fields = ('email', 'password')
+
+    def create(self, validated_data):
+        user = CustomUser.objects.create(
+            email=validated_data['email'],
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+# JWT トークン用シリアライザ
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        logger.debug(f"CustomTokenObtainPairSerializer.get_token called for user: {user.email}")
+        token = super().get_token(user)
+        token['email'] = user.email  # カスタムクレーム
+        return token

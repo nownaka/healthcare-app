@@ -2,3 +2,4 @@ Django
 psycopg2
 djangorestframework #追加
 django-cors-headers #追加
+djangorestframework_simplejwt #追加

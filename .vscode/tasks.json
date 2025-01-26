@@ -39,6 +39,30 @@
       "label": "Azure Bicep Deployment",
       "type": "shell",
       "command": "docker compose -f ${workspaceFolder}/infra/docker-compose.yml run --rm deploy_resource sh ./scripts/azure-bicep-deployments.sh"
-    }
+    },
+    {
+      "label": "Django: Make Migrations",
+      "type": "shell",
+      "command": "python",
+      "args": ["backend/manage.py", "makemigrations"],
+      "group": {
+          "kind": "build",
+          "isDefault": true
+      },
+      "problemMatcher": [],
+      "detail": "Djangoのmakemigrationsコマンドを実行します。"
+  },
+  {
+      "label": "Django: Migrate",
+      "type": "shell",
+      "command": "python",
+      "args": ["backend/manage.py", "migrate"],
+      "group": {
+          "kind": "build",
+          "isDefault": false
+      },
+      "problemMatcher": [],
+      "detail": "Djangoのmigrateコマンドを実行します。"
+  }
   ]
 }
