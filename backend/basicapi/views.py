@@ -1,9 +1,10 @@
 import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status,viewsets
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer
+from .models import UserProfile, WeightRecord, CalorieRecord
+from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer, UserProfileSerializer, WeightRecordSerializer, CalorieRecordSerializer
 
 # ログ設定
 logger = logging.getLogger(__name__)
@@ -32,3 +33,19 @@ class RegisterView(APIView):
 # JWT トークン発行ビュー
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+
+# プロフィールビューセット
+class UserProfileViewSet(viewsets.ModelViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+
+# 体重履歴ビューセット
+class WeightRecordViewSet(viewsets.ModelViewSet):
+    queryset = WeightRecord.objects.all()
+    serializer_class = WeightRecordSerializer
+
+# カロリー記録ビューセット
+class CalorieRecordViewSet(viewsets.ModelViewSet):
+    queryset = CalorieRecord.objects.all()
+    serializer_class = CalorieRecordSerializer

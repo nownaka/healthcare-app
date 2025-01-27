@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, UserProfile, WeightRecord, CalorieRecord
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import logging
 
@@ -30,3 +30,22 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['email'] = user.email  # カスタムクレーム
         return token
+
+
+# プロフィールシリアライザー
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+# 体重履歴シリアライザー
+class WeightRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WeightRecord
+        fields = '__all__'
+
+# カロリー記録シリアライザー
+class CalorieRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CalorieRecord
+        fields = '__all__'
