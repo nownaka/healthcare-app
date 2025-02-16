@@ -1,25 +1,28 @@
+import React from "react";
 
-type Button = {
-    label: string
-    type:  "submit" | "reset" | "button" | undefined
-    className: string | undefined
-    onClick: React.MouseEventHandler<HTMLButtonElement> | undefined
-}
+type ButtonProps = {
+  label: string;
+  type?: "submit" | "reset" | "button";
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+};
 
+const Button: React.FC<ButtonProps> = ({
+  label,
+  type = "button",
+  className = "",
+  onClick,
+}) => {
+  return (
+    <button
+      type={type}
+      className={className}
+      onClick={onClick}
+      style={{ padding: "10px", cursor: "pointer" }}
+    >
+      {label}
+    </button>
+  );
+};
 
-const Button = (button: Button) => {
-    const label = button.label
-    const type = button.type
-    const className = button.className
-    const onClick = button.onClick
-
-    return (
-        <button
-            type={type} className={className} onClick={onClick}>
-            {label}
-        </button>
-    )
-
-}
-
-export default Button
+export default Button;
