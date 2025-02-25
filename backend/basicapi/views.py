@@ -3,9 +3,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,viewsets
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import UserProfile, WeightRecord, CalorieRecord
-from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer, UserProfileSerializer, WeightRecordSerializer, CalorieRecordSerializer
-
+from .models import UserProfile, WeightRecord, CalorieRecord, SleepRecord
+from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer, UserProfileSerializer, WeightRecordSerializer, CalorieRecordSerializer, SleepRecordSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 # ログ設定
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # JWT トークン発行ビュー
-class CustomTokenObtainPairView(TokenObtainPairView):
+class TokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
@@ -49,3 +50,8 @@ class WeightRecordViewSet(viewsets.ModelViewSet):
 class CalorieRecordViewSet(viewsets.ModelViewSet):
     queryset = CalorieRecord.objects.all()
     serializer_class = CalorieRecordSerializer
+
+# 睡眠記録ビューセット
+class SleepRecordViewSet(viewsets.ModelViewSet):
+    queryset = SleepRecord.objects.all()
+    serializer_class = SleepRecordSerializer

@@ -13,7 +13,6 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,9 +51,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware", # 追加
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -153,6 +152,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_CREDENTIALS = True
 # アクセスを許可したいURL（アクセス元）を追加
 CORS_ALLOWED_ORIGINS = os.environ.get("TRUSTED_ORIGINS").split(" ")
+print(os.environ.get("TRUSTED_ORIGINS"))
 # プリフライト(事前リクエスト)の設定
 # 30分だけ許可
 CORS_PREFLIGHT_MAX_AGE = 60 * 30
@@ -171,12 +171,24 @@ AUTH_USER_MODEL = 'basicapi.CustomUser'
 
 
 SIMPLE_JWT = {
-    
+
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=10), #トークンの有効期限を10時間に設定
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7), #リフレッシュトークンの有効期限を７日間に設定
     'ROTATE_REFRESH_TOKENS': True, #リフレッシュ トークン送信時に新しいリフレッシュトークンを取得できる
     'UPDATE_LAST_LOGIN': True, #ログイン時に auth_user テーブルの last_login フィールドが更新される
+    # 以下追加
+    'BLACKLIST_AFTER_ROTATION': False, 
+    'ALGORITHM': 'HS256', 
+    'SIGNING_KEY': SECRET_KEY, 
+    'VERIFYING_KEY': None, 
+    'AUTH_HEADER_TYPES': ('Bearer',), 
+    'USER_ID_FIELD': 'email',
+    # 'USER_ID_FIELD': 'username', 
+    'USER_ID_CLAIM': 'username', 
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',), 
+    'TOKEN_TYPE_CLAIM': 'token_type', 
 }
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

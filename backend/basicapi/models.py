@@ -23,7 +23,7 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self.create_user(email, password, **extra_fields)
+        return self.create_user(email, password, **extra_fields)                
 
 # カスタムユーザーモデル
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -55,6 +55,7 @@ class UserProfile(models.Model):
     goal = models.TextField(null=True, blank=True)  # ユーザーの目標（任意）
     created_at = models.DateTimeField(auto_now_add=True)  # プロフィール作成日
     updated_at = models.DateTimeField(auto_now=True)  # プロフィール更新日
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return f"{self.nickname} ({self.user.email})"
@@ -87,3 +88,15 @@ class CalorieRecord(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.calorie}kcal on {self.recorded_at}"
+
+# 睡眠時間記録テーブル
+class SleepRecord(models.Model):
+    id = models.AutoField(primary_key=True)  # 主キー
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sleep_records')  # ユーザーID
+    recorded_at = models.DateField()  # 記録日
+    sleep_time = models.FloatField()  # 睡眠時間
+    created_at = models.DateTimeField(auto_now_add=True)  # レコード作成日時
+    updated_at = models.DateTimeField(auto_now=True)  # レコード更新日時
+
+    def __str__(self):
+        return f"{self.user.email} - {self.sleep_time}min on {self.recorded_at}"

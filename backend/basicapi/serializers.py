@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, UserProfile, WeightRecord, CalorieRecord
+from .models import CustomUser, UserProfile, WeightRecord, CalorieRecord, SleepRecord
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import logging
 
@@ -15,12 +15,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ('email', 'password')
 
     def create(self, validated_data):
-        user = CustomUser.objects.create(
-            email=validated_data['email'],
-        )
-        user.set_password(validated_data['password'])
-        user.save()
+        # create_user を使うとパスワードは自動でハッシュ化される
+        user = CustomUser.objects.create_user(**validated_data)
         return user
+
+    # def create(self, validated_data):
+    #     user = CustomUser.objects.create(
+    #         email=validated_data['email'],
+    #     )
+    #     user.set_password(validated_data['password'])
+    #     user.save()
+    #     return user
 
 # JWT トークン用シリアライザ
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -48,4 +53,10 @@ class WeightRecordSerializer(serializers.ModelSerializer):
 class CalorieRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalorieRecord
+        fields = '__all__'
+
+# カロリー記録シリアライザー
+class SleepRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SleepRecord
         fields = '__all__'

@@ -1,10 +1,13 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import logo from "./logo.svg";
 import "./App.css";
+import AuthSuccess from './components/AuthSuccess';
+import AuthFailure from './components/AuthFailure';
 import Login from './components/Login';
 import Register from './components/Register';
 
-function App() {
+// function App: React.FC = () => {
   // return (
   //   <div className="App">
   //     <header className="App-header">
@@ -23,13 +26,17 @@ function App() {
   //     </header>
   //   </div>
   // );
+const App: React.FC = () => {
   return (
-    <div>
-      <Login />
-      <hr />
-      <Register />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/success" element={<AuthSuccess />} />
+        <Route path="/failure" element={<AuthFailure />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
