@@ -162,6 +162,7 @@ CORS_PREFLIGHT_MAX_AGE = 60 * 30
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'basicapi.authentication.CookieJWTAuthentication',
     ],
     #     'DEFAULT_PERMISSION_CLASSES': [
     #     'rest_framework.permissions.IsAuthenticated',
