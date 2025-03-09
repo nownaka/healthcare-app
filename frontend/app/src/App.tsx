@@ -6,8 +6,13 @@ import AuthSuccess from './components/viewpage/AuthSuccess';
 import AuthFailure from './components/viewpage/AuthFailure';
 import Login from './components/bussiness/Login';
 import Register from './components/viewpage/Register';
+import CalorieRecord from './components/CalorieRecord';
+import SleepRecord from './components/SleepRecord';
+import Dashboard from './components/Dashboard';
 import ProtectedRoute from './components/bussiness/LoginCheck';
 import Profile from "./components/bussiness/Profile"; // 適切なパスに変更
+
+
 
 // function App: React.FC = () => {
   // return (
@@ -31,6 +36,8 @@ import Profile from "./components/bussiness/Profile"; // 適切なパスに変�
 const App: React.FC = () => {
   return (
     <Router>
+      <div>
+      {/* ナビゲーションを追加する場合はここに配置 */}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/failure" element={<AuthFailure />} />
@@ -41,6 +48,13 @@ const App: React.FC = () => {
           <Route path="/profileform" element={<Profile />} />
         </Route>
       </Routes>
+                {/* ホーム画面に表示するコンポーネント */}
+                <main>
+            <Dashboard />  
+            <CalorieRecord />
+            <SleepRecord />
+          </main>
+        </div>
     </Router>
   );
 };
