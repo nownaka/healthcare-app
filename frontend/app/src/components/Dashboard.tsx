@@ -11,16 +11,15 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-
+        // JWTトークンをヘッダーに含めず、Cookie から送信
         const calorieResponse = await axios.get('http://localhost:8000/api/calorie-records/', {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Cookie を送信
         });
         setCalories(calorieResponse.data.map((record: any) => record.calorie));
         setDates(calorieResponse.data.map((record: any) => record.recorded_at));
 
         const sleepResponse = await axios.get('http://localhost:8000/api/sleep-records/', {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true, // Cookie を送信
         });
         setSleepHours(sleepResponse.data.map((record: any) => record.sleep_time));
 

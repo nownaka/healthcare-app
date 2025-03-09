@@ -6,13 +6,12 @@ const CalorieRecord: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const token = localStorage.getItem('access_token');
       await axios.post(
         'http://localhost:8000/api/calorie-records/',
         {  user: 1,  // user ID を固定値 1 に設定
           calorie,
          recorded_at: new Date().toISOString().split('T')[0] },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {withCredentials: true,} // Cookie を送信するために必要
       );
       alert('Calorie recorded!');
     } catch (error) {
