@@ -1,7 +1,7 @@
 from django.urls import path, include
-from .views import RegisterView, TokenObtainPairView,UserProfileViewSet, WeightRecordViewSet, CalorieRecordViewSet, SleepRecordViewSet
+from .views import RegisterView, CustomTokenObtainPairView, UserProfileViewSet, WeightRecordViewSet, CalorieRecordViewSet, SleepRecordViewSet, AuthStatusView
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenRefreshView,TokenObtainPairView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 router = DefaultRouter()
 router.register(r'user-profiles', UserProfileViewSet, basename='userprofile')
@@ -13,9 +13,11 @@ urlpatterns = [
     # ユーザー登録
     path('register/', RegisterView.as_view(), name='register'),
     # JWT トークン取得
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # CustomTokenObtainPairView.as_view(),
+    path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'), # CustomTokenObtainPairView.as_view(),
     # JWT トークンリフレッシュ
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # 認証
+    path('auth/status/', AuthStatusView.as_view(), name='auth_status'),
 
     path('', include(router.urls)),
 

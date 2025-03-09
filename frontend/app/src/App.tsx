@@ -9,8 +9,8 @@ import Register from './components/Register';
 import CalorieRecord from './components/CalorieRecord';
 import SleepRecord from './components/SleepRecord';
 import Dashboard from './components/Dashboard';
-
-
+import ProtectedRoute from './components/bussiness/LoginCheck';
+import Profile from "./components/bussiness/Profile"; // 適切なパスに変更
 
 
 
@@ -33,6 +33,7 @@ import Dashboard from './components/Dashboard';
   //     </header>
   //   </div>
   // );
+<<<<<<< HEAD
   const App: React.FC = () => {
     return (
       <Router>
@@ -57,5 +58,23 @@ import Dashboard from './components/Dashboard';
       </Router>
     );
   };
+=======
+const App: React.FC = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/failure" element={<AuthFailure />} />
+        <Route path="/register" element={<Register />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/success" element={<AuthSuccess />} />
+          <Route path="/profileform" element={<Profile />} />
+        </Route>
+      </Routes>
+    </Router>
+  );
+};
+>>>>>>> 4793d13067bea512ec5845f29b5f68b8fb8758c7
 
 export default App;
