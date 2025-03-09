@@ -2,10 +2,10 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import logo from "./logo.svg";
 import "./App.css";
-import AuthSuccess from './components/AuthSuccess';
-import AuthFailure from './components/AuthFailure';
-import Login from './components/Login';
-import Register from './components/Register';
+import AuthSuccess from './components/viewpage/AuthSuccess';
+import AuthFailure from './components/viewpage/AuthFailure';
+import Login from './components/bussiness/Login';
+import Register from './components/viewpage/Register';
 import CalorieRecord from './components/CalorieRecord';
 import SleepRecord from './components/SleepRecord';
 import Dashboard from './components/Dashboard';
@@ -33,35 +33,11 @@ import Profile from "./components/bussiness/Profile"; // 適切なパスに変�
   //     </header>
   //   </div>
   // );
-<<<<<<< HEAD
-  const App: React.FC = () => {
-    return (
-      <Router>
-        <div>
-          {/* ナビゲーションを追加する場合はここに配置 */}
-          
-          {/* ルーティング */}
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/success" element={<AuthSuccess />} />
-            <Route path="/failure" element={<AuthFailure />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-  
-          {/* ホーム画面に表示するコンポーネント */}
-          <main>
-            <Dashboard />  
-            <CalorieRecord />
-            <SleepRecord />
-          </main>
-        </div>
-      </Router>
-    );
-  };
-=======
 const App: React.FC = () => {
   return (
     <Router>
+      <div>
+      {/* ナビゲーションを追加する場合はここに配置 */}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/failure" element={<AuthFailure />} />
@@ -72,9 +48,15 @@ const App: React.FC = () => {
           <Route path="/profileform" element={<Profile />} />
         </Route>
       </Routes>
+                {/* ホーム画面に表示するコンポーネント */}
+                <main>
+            <Dashboard />  
+            <CalorieRecord />
+            <SleepRecord />
+          </main>
+        </div>
     </Router>
   );
 };
->>>>>>> 4793d13067bea512ec5845f29b5f68b8fb8758c7
 
 export default App;
