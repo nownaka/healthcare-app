@@ -1,19 +1,29 @@
-import { Routes, Route } from "react-router-dom";
-import App from "../App";
-import Home from "../components/pages/HomePage";
-import SignUpPage from "../components/pages/SignUpPage";
-import TermsPage from "../components/pages/TermsPage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "../components/organisms/Header";
+import { useNavigation } from "../components/organisms/Navigation";
+import HomePage from "../components/pages/HomePage";
 import SettingsPage from "../components/pages/SettingsPage";
+import TermsPage from "../components/pages/TermsPage";
+import LoginPage from "../components/pages/LoginPage";
 
 const AppRoutes = () => {
+  const { handleNavigation } = useNavigation();
+
   return (
-    <Routes>
-      <Route path="/" element={<App />} />
-      <Route path="/signup" element={<SignUpPage />} />
-      <Route path="/Home" element={<Home />} />
-      <Route path="/Terms" element={<TermsPage />} />
-      <Route path="/Settings" element={<SettingsPage />} />
-    </Routes>
+    <Router>
+      <Header
+        title="健康管理アプリ"
+        userName="健康 太郎"
+        textColor="white"
+        onMenuClick={handleNavigation}
+      />
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+      </Routes>
+    </Router>
   );
 };
 

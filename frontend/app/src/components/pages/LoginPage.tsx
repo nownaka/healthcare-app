@@ -1,14 +1,19 @@
 import React, { useState } from "react";
-import "./LoginPage.css";
-import Button from "../atoms/Button";
+import { useNavigate } from "react-router-dom";
 import Input from "../atoms/Input";
+import Button from "../atoms/Button";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = (e: any) => {
+  // テスト用のメールアドレスとパスワード
+  const TEST_EMAIL = "test@example.com";
+  const TEST_PASSWORD = "password123";
+
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -17,8 +22,9 @@ const LoginPage = () => {
       return;
     }
 
-    if (email === "test@example.com" && password === "password123")     {
+    if (email === TEST_EMAIL && password === TEST_PASSWORD) {
       alert("ログイン成功！");
+      navigate("/home"); // ✅ HomePage.tsx に遷移
     } else {
       setError("メールアドレスまたはパスワードが間違っています");
     }
@@ -31,13 +37,28 @@ const LoginPage = () => {
         {error && <p className="error-message">{error}</p>}
         <div className="form-group">
           <label>Email</label>
-          <Input type="email" value={email} placeholder="Emailを入力してください" onChange={(e) => setEmail(e.target.value)}/>
+          <Input
+            type="email"
+            value={email}
+            placeholder="Emailを入力してください"
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
         <div className="form-group">
           <label>Password</label>
-          <Input type="password" value={password} placeholder="パスワードを入力してください" onChange={(e) => setPassword(e.target.value)} />
+          <Input
+            type="password"
+            value={password}
+            placeholder="パスワードを入力してください"
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
-        <Button label="ログイン" type="submit" className="login-button" onClick={undefined} />
+        <Button
+          label="ログイン"
+          type="submit"
+          className="login-button"
+          onClick={undefined}
+        />
       </form>
     </div>
   );

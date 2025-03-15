@@ -1,4 +1,4 @@
-import React from "react";
+/*import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import LoginPage from "./components/pages/LoginPage";
@@ -25,6 +25,19 @@ function App() {
     <>
       <LoginPage />
     </>
+  );
+}
+
+export default App;
+*/
+import { BrowserRouter as Router } from "react-router-dom";
+import AppRoutes from "./routes/Routes";
+
+function App() {
+  return (
+    <Router>
+      <AppRoutes />
+    </Router>
   );
 }
 
