@@ -24,7 +24,7 @@ const LoginPage = () => {
 
     if (email === TEST_EMAIL && password === TEST_PASSWORD) {
       alert("ログイン成功！");
-      navigate("/home"); // ✅ HomePage.tsx に遷移
+      navigate("/home");
     } else {
       setError("メールアドレスまたはパスワードが間違っています");
     }
