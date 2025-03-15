@@ -15,9 +15,11 @@
     "js-cookie": "^3.0.5",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.3.0",
+    "react-calendar": "^5.1.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.5",
     "react-scripts": "5.0.1",
+    "styled-components": "^6.1.13",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -44,5 +46,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-calendar": "^3.9.0",
+    "@types/react-router-dom": "^5.3.3"
   }
 }
