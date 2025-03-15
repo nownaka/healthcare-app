@@ -64,40 +64,38 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
-      <form onSubmit={handleLogin} className="login-form">
-        <h1>ログイン</h1>
-        {error && <p className="error-message">{error}</p>}
-        <div className="form-group">
-          <label>Email</label>
-          <Input
-            type="email"
-            value={email}
-            placeholder="Emailを入力してください"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <Input
-            type="password"
-            value={password}
-            placeholder="パスワードを入力してください"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <Button
-          label="ログイン"
-          type="submit"
-          className="login-button"
-          onClick={handleLogin}
+      <h1>ログイン</h1>
+      {error && <p className="error-message">{error}</p>}
+      <div className="form-group">
+        <label>Email</label>
+        <Input
+          type="email"
+          value={email}
+          placeholder="Emailを入力してください"
+          onChange={(e) => setEmail(e.target.value)}
         />
-        <Button
-          label="サインアップ"
-          type="submit"
-          className="login-button"
-          onClick={handleRegister}
+      </div>
+      <div className="form-group">
+        <label>Password</label>
+        <Input
+          type="password"
+          value={password}
+          placeholder="パスワードを入力してください"
+          onChange={(e) => setPassword(e.target.value)}
         />
-      </form>
+      </div>
+      <Button
+        label="ログイン"
+        type="submit"
+        className="login-button"
+        onClick={handleLogin}
+      />
+      <Button
+        label="サインアップ"
+        type="submit"
+        className="login-button"
+        onClick={handleRegister}
+      />
     </div>
   );
 };
