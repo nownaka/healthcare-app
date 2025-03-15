@@ -1,12 +1,40 @@
-import Header from "../organisms/Header";
+import React from "react";
+import HeaderContainer from "../organisms/HeaderContainer";
+import CustomCalendar from "../organisms/CustomCalendar";
+import styled from "styled-components";
 
-type HomePage = {};
+const HomeContainer = styled.div`
+  display: flex;
+  height: 100vh;
+`;
 
-const HomePage = (homePage: HomePage) => {
+const LeftContainer = styled.div`
+  width: 25%;
+  background-color: #f4f4f4;
+  padding: 20px;
+`;
+
+const RightContainer = styled.div`
+  width: 75%;
+  padding: 20px;
+`;
+
+const HomePage: React.FC = () => {
   return (
     <>
-      <Header title='健康管理アプリ' userName='健康 太郎' textColor='white' />
-      Home 画面
+      {/* ✅ ヘッダー管理は HeaderContainer に移行 */}
+      <HeaderContainer />
+
+      <HomeContainer>
+        {/* カレンダー */}
+        <LeftContainer>
+          <h3>カレンダー</h3>
+          <CustomCalendar />
+        </LeftContainer>
+
+        {/* 右側（コンテンツ追加予定） */}
+        <RightContainer></RightContainer>
+      </HomeContainer>
     </>
   );
 };
