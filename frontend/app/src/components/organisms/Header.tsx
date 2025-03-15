@@ -7,7 +7,7 @@ type HeaderProps = {
   title: string;
   userName?: string;
   textColor?: string;
-  onMenuClick?: () => void; // ✅ 追加
+  onMenuClick?: (menu: string) => void; // ✅ 追加
 };
 
 const Header: React.FC<HeaderProps> = ({
@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    if (onMenuClick) onMenuClick(); // ✅ 外部からメニュー開閉を制御可能に
+    if (onMenuClick) onMenuClick("menu"); // ✅ 外部からメニュー開閉を制御可能に
   };
 
   return (
@@ -38,17 +38,17 @@ const Header: React.FC<HeaderProps> = ({
             <Button
               label="プロフィール設定"
               type="button"
-              onClick={() => onMenuClick && onMenuClick()}
+              onClick={() => onMenuClick && onMenuClick("settings")}
             />
             <Button
               label="利用規約"
               type="button"
-              onClick={() => onMenuClick && onMenuClick()}
+              onClick={() => onMenuClick && onMenuClick("terms")}
             />
             <Button
               label="ログアウト"
               type="button"
-              onClick={() => onMenuClick && onMenuClick()}
+              onClick={() => onMenuClick && onMenuClick("logout")}
             />
           </DropdownMenu>
         )}

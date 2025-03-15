@@ -1,29 +1,45 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import Header from "../components/organisms/Header";
-import { useNavigation } from "../components/organisms/Navigation";
+import Navigation from "../components/organisms/Navigation";
 import HomePage from "../components/pages/HomePage";
 import SettingsPage from "../components/pages/SettingsPage";
 import TermsPage from "../components/pages/TermsPage";
 import LoginPage from "../components/pages/LoginPage";
+import ProtectedRoute from "../components/bussiness/LoginCheck";
+import AuthFailure from "../components/viewpage/AuthFailure";
 
 const AppRoutes = () => {
-  const { handleNavigation } = useNavigation();
+  const { handleNavigation } = Navigation();
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/";
 
   return (
-    <Router>
-      <Header
-        title="健康管理アプリ"
-        userName="健康 太郎"
-        textColor="white"
-        onMenuClick={handleNavigation}
-      />
+    <>
+      {!isLoginPage && (
+        <Header
+          title="健康管理アプリ"
+          userName="健康 太郎"
+          textColor="white"
+          onMenuClick={handleNavigation}
+        />
+      )}
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/terms" element={<TermsPage />} />
+
+        <Route path="/failure" element={<AuthFailure />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+        </Route>
       </Routes>
-    </Router>
+    </>
   );
 };
 

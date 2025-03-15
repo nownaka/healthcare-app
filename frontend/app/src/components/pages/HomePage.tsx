@@ -2,6 +2,9 @@ import React from "react";
 import HeaderContainer from "../organisms/HeaderContainer";
 import CustomCalendar from "../organisms/CustomCalendar";
 import styled from "styled-components";
+import CalorieRecord from "../bussiness/CalorieRecord";
+import SleepRecord from "../bussiness/SleepRecord";
+import Dashboard from "../bussiness/Dashboard";
 
 const HomeContainer = styled.div`
   display: flex;
@@ -34,6 +37,12 @@ const HomePage: React.FC = () => {
 
         {/* 右側（コンテンツ追加予定） */}
         <RightContainer></RightContainer>
+
+        {/* ------------バックエンドからのコンポーネント
+        <CalorieRecord />
+        <SleepRecord />
+        <Dashboard /> */}
+        {/* ------------バックエンドからのコンポーネント */}
       </HomeContainer>
     </>
   );

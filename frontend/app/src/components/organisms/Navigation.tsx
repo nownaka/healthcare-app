@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-export const useNavigation = () => {
+const Navigation = () => {
   const navigate = useNavigate();
 
   const handleNavigation = (menu: string) => {
@@ -25,3 +25,5 @@ export const useNavigation = () => {
 
   return { handleNavigation };
 };
+
+export default Navigation;
