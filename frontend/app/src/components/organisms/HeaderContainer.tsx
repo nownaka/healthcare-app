@@ -27,8 +27,8 @@ const HeaderContainer: React.FC = () => {
       <Header
         title="健康管理アプリ"
         userName="健康 太郎"
-        textColor="white" // ✅ textColor を Header に渡す
-        onMenuClick={toggleMenu} // ✅ メニュー開閉用
+        textColor="white"
+        onMenuClick={toggleMenu}
       />
       {isMenuOpen && (
         <DropdownMenu onNavigate={handleNavigation} onLogout={handleLogout} />
