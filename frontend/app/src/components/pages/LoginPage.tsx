@@ -64,7 +64,6 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
-      <form onSubmit={handleLogin} className="login-form">
         <h1>ログイン</h1>
         {error && <p className="error-message">{error}</p>}
         <div className="form-group">
@@ -97,7 +96,6 @@ const LoginPage = () => {
           className="login-button"
           onClick={handleRegister}
         />
-      </form>
     </div>
   );
 };

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import SettingImage from "./setting.svg";
 import Button from "../atoms/Button";
+import { logout } from "../bussiness/Logout";
 
 type HeaderProps = {
   title: string;
@@ -18,9 +20,28 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const navigate = useNavigate();
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
     if (onMenuClick) onMenuClick("menu"); // ✅ 外部からメニュー開閉を制御可能に
+  };
+  
+  // ログアウト処理
+  const handleLogout = () => {
+    // ログアウト関数を呼び出し
+    const success = logout();
+    
+    if (success) {
+      // メニューを閉じる
+      setIsMenuOpen(false);
+      
+      // ログインページにリダイレクト
+      navigate("/login");
+    }
+    
+    // 親コンポーネントにログアウトイベントを通知
+    if (onMenuClick) onMenuClick("logout");
   };
 
   return (
@@ -48,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({
             <Button
               label="ログアウト"
               type="button"
-              onClick={() => onMenuClick && onMenuClick("logout")}
+              onClick={handleLogout}
             />
           </DropdownMenu>
         )}
