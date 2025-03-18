@@ -10,8 +10,8 @@ import HomePage from "../components/pages/HomePage";
 import SettingsPage from "../components/pages/SettingsPage";
 import TermsPage from "../components/pages/TermsPage";
 import LoginPage from "../components/pages/LoginPage";
-import ProtectedRoute from "../components/bussiness/LoginCheck";
-import AuthFailure from "../components/viewpage/AuthFailure";
+import ProtectedRoute from "../logic/LoginCheck";
+import AuthFailure from "../components/pages/AuthFailure";
 
 const AppRoutes = () => {
   const { handleNavigation } = Navigation();

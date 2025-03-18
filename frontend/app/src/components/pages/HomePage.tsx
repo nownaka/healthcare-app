@@ -2,9 +2,9 @@ import React from "react";
 import HeaderContainer from "../organisms/HeaderContainer";
 import CustomCalendar from "../organisms/CustomCalendar";
 import styled from "styled-components";
-import CalorieRecord from "../bussiness/CalorieRecord";
-import SleepRecord from "../bussiness/SleepRecord";
-import Dashboard from "../bussiness/Dashboard";
+import CalorieRecord from "../../logic/CalorieRecord";
+import SleepRecord from "../../logic/SleepRecord";
+import Dashboard from "../../logic/Dashboard";
 
 const HomeContainer = styled.div`
   display: flex;
