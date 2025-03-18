@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import SettingImage from "./setting.svg";
-import Button from "../atoms/Button";
+import IconButton from "../molecules/IconButton";
+import { logout } from "../../logic/Logout";
 
 type HeaderProps = {
   title: string;
@@ -18,9 +20,32 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const navigate = useNavigate();
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
     if (onMenuClick) onMenuClick("menu"); // ✅ 外部からメニュー開閉を制御可能に
+  };
+  
+  const handleLogout = async () => {
+    try {
+      // ログアウト関数を呼び出し（await を使用）
+      const success = await logout();
+  
+      if (success) {
+        // メニューを閉じる
+        setIsMenuOpen(false);
+        
+        // ログインページにリダイレクト
+        navigate("/login");
+      }
+      
+      // 親コンポーネントにログアウトイベントを通知
+      if (onMenuClick) onMenuClick("logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("ログアウト処理中にエラーが発生しました。");
+    }
   };
 
   return (
@@ -35,20 +60,20 @@ const Header: React.FC<HeaderProps> = ({
 
         {isMenuOpen && (
           <DropdownMenu>
-            <Button
+            <IconButton
               label="プロフィール設定"
-              type="button"
+              iconSrc="/icons/profile.svg"
               onClick={() => onMenuClick && onMenuClick("settings")}
             />
-            <Button
+            <IconButton
               label="利用規約"
-              type="button"
+              iconSrc="/icons/terms.svg"
               onClick={() => onMenuClick && onMenuClick("terms")}
             />
-            <Button
+            <IconButton
               label="ログアウト"
-              type="button"
-              onClick={() => onMenuClick && onMenuClick("logout")}
+              iconSrc="/icons/logout.svg"
+              onClick={handleLogout}
             />
           </DropdownMenu>
         )}
@@ -97,6 +122,14 @@ const DropdownMenu = styled.div`
   position: absolute;
   top: 50px;
   right: 0;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 150px;
   background: white;
   padding: 10px;
   border-radius: 8px;
