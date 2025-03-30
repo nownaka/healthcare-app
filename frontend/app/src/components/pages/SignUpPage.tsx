@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +11,47 @@ const SignupForm = () => {
     weight: "",
     goal: "",
   });
+
+  const navigate = useNavigate();
+
+  // Sign Up 処理
+  const handleSignUp = async (formEvent: React.FormEvent) => {
+    // フォームのデフォルト送信を防止
+    formEvent.preventDefault();
+
+    try {
+      // 情報登録
+      const resisterResponse = await axios.post<{ message: string }>(
+        "http://localhost:8000/api/register/",
+        formData
+      );
+      console.log(resisterResponse.data.message);
+
+      // トークン取得
+      const token = await axios.post(
+        "http://localhost:8000/api/token/",
+        {
+          email: formData.email,
+          password: formData.password,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true, // HttpOnly Cookieを利用するために必要
+        }
+      );
+
+      // ホーム画面へ遷移する。
+      navigate("/home");
+
+      // HttpOnly Cookieにトークンがセットされるので、localStorageへの保存は不要
+      console.log("Logged in successfully.");
+    } catch (error: any) {
+      console.error(
+        "Registration failed:",
+        error.response?.data || "Unknown error"
+      );
+    }
+  };
 
   const [errors, setErrors] = useState({
     height: "",
@@ -40,11 +83,6 @@ const SignupForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted", formData);
-  };
-
   const placeholders: { [key in keyof typeof formData]: string } = {
     nickname: "例: Taro123",
     email: "例: example@email.com",
@@ -66,8 +104,9 @@ const SignupForm = () => {
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>サインアップ</h2>
-      <form style={styles.form} onSubmit={handleSubmit}>
+      <form style={styles.form} onSubmit={handleSignUp}>
         {(Object.keys(formData) as Array<keyof typeof formData>).map((key) => {
+          // 身長と体重の場合
           if (key === "height" || key === "weight") {
             return (
               <div key={key} style={styles.inputContainer}>
@@ -91,7 +130,7 @@ const SignupForm = () => {
               </div>
             );
           }
-
+          // それ以外
           return (
             <div key={key} style={styles.inputContainer}>
               <label style={styles.label}>{labels[key]}</label>
