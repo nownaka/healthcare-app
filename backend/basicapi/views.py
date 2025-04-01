@@ -9,7 +9,8 @@ from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer, Us
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework_simplejwt.backends import TokenBackend
+from django.conf import settings
 
 # ログ設定
 logger = logging.getLogger(__name__)
@@ -128,3 +129,37 @@ class CookieTokenRefreshView(BaseTokenRefreshView):
             path='/',
         )
         return response
+
+class CookieUserInfoView(APIView):
+    """
+    HttpOnly Cookie に格納されたアクセストークンを検証し、
+    トークンのペイロードからユーザーIDを取得して返すビュー
+    """
+    def get(self, request, *args, **kwargs):
+        # Cookie からアクセストークンを取得
+        access_token = request.COOKIES.get('access_token')
+        if not access_token:
+            return Response({"error": "Access token not found."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # SimpleJWT の TokenBackend を使ってトークンの検証・デコード
+            token_backend = TokenBackend(
+                algorithm=settings.SIMPLE_JWT['ALGORITHM'],
+                signing_key=settings.SECRET_KEY  # または settings.SIMPLE_JWT['SIGNING_KEY'] があればそちらを使用
+            )
+            token_data = token_backend.decode(access_token, verify=True)
+            # token_backend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
+            # token_data = token_backend.decode(access_token, verify=True)
+        except Exception as e:
+            return Response({"error": "Invalid token", "details": str(e)},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        
+        # ペイロードからユーザーIDを取得（ログイン時にトークンに含めた情報）
+        user_id = token_data.get('user_id')
+        if not user_id:
+            return Response({"error": "User ID not found in token."},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        
+        return Response({"user_id": user_id, "message": "Token is valid. User authenticated."},
+                        status=status.HTTP_200_OK)

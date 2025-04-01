@@ -34,6 +34,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         logger.debug(f"CustomTokenObtainPairSerializer.get_token called for user: {user.email}")
         token = super().get_token(user)
         token['email'] = user.email  # カスタムクレーム
+        token['user_id'] = user.id
         return token
 
 

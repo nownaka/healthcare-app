@@ -12,6 +12,7 @@ import TermsPage from "../components/pages/TermsPage";
 import LoginPage from "../components/pages/LoginPage";
 import ProtectedRoute from "../logic/LoginCheck";
 import AuthFailure from "../components/pages/AuthFailure";
+import SignUpPage from "../components/pages/SignUpPage";
 
 const AppRoutes = () => {
   const { handleNavigation } = Navigation();
@@ -20,16 +21,9 @@ const AppRoutes = () => {
 
   return (
     <>
-      {!isLoginPage && (
-        <Header
-          title="健康管理アプリ"
-          userName="健康 太郎"
-          textColor="white"
-          onMenuClick={handleNavigation}
-        />
-      )}
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
 
         <Route path="/failure" element={<AuthFailure />} />
 
