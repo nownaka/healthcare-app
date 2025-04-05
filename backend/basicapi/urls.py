@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import RegisterView, CustomTokenObtainPairView, UserProfileViewSet, WeightRecordViewSet, CalorieRecordViewSet, SleepRecordViewSet, AuthStatusView
+from .views import RegisterView, CustomTokenObtainPairView, UserProfileViewSet, WeightRecordViewSet, CalorieRecordViewSet, SleepRecordViewSet, AuthStatusView, CookieUserInfoView
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -18,6 +18,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # 認証
     path('auth/status/', AuthStatusView.as_view(), name='auth_status'),
+    path('userinfo/', CookieUserInfoView.as_view(), name='user_info'),
 
     path('', include(router.urls)),
 
