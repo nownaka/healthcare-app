@@ -13,7 +13,7 @@ const CalorieRecord: React.FC = () => {
          recorded_at: new Date().toISOString().split('T')[0] },
         {withCredentials: true,} // Cookie を送信するために必要
       );
-      alert('Calorie recorded!');
+      alert('Calorie recorded!aaaaaaaaaaaaaaaaa');
     } catch (error) {
       console.error('Error recording calorie:', error);
     }
@@ -21,11 +21,23 @@ const CalorieRecord: React.FC = () => {
 
   return (
     <div>
-      <h2>Calorie Intake</h2>
+      <h2>カロリー登録</h2>
       <input type="number" value={calorie} onChange={(e) => setCalorie(Number(e.target.value))} />
-      <button onClick={handleSubmit}>Submit</button>
+      <button style={styles.button} onClick={handleSubmit}>Submit</button>
     </div>
   );
+};
+
+const styles: { [key: string]: React.CSSProperties } = {
+  button: {
+    padding: "10px",
+    fontSize: "16px",
+    borderRadius: "5px",
+    border: "none",
+    backgroundColor: "#007bff",
+    color: "white",
+    cursor: "pointer",
+  },
 };
 
 export default CalorieRecord;

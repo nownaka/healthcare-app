@@ -6,7 +6,7 @@ const SleepRecord: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post(
+      await axios.put(
         'http://localhost:8000/api/sleep-records/',
         {
           user: 1,  // user ID を固定値 1 に設定
@@ -25,11 +25,25 @@ const SleepRecord: React.FC = () => {
 
   return (
     <div>
-      <h2>Sleep Record</h2>
+      <h2>睡眠時間登録</h2>
       <input type="number" value={sleepTime} onChange={(e) => setSleepTime(Number(e.target.value))} />
-      <button onClick={handleSubmit}>Submit</button>
+      <button style={styles.button} onClick={handleSubmit}>Submit</button>
     </div>
   );
 };
+
+const styles: { [key: string]: React.CSSProperties } = {
+  button: {
+    padding: "10px",
+    fontSize: "16px",
+    borderRadius: "5px",
+    border: "none",
+    backgroundColor: "#007bff",
+    color: "white",
+    cursor: "pointer",
+  },
+};
+
+
 
 export default SleepRecord;
