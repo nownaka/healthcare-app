@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
-import DropdownMenu from "./DropdownMenu";
+import DropdownMenu from "../molecules/DropdownMenu";
 import { logout } from "../../logic/Logout";
 
 const HeaderContainer: React.FC = () => {
