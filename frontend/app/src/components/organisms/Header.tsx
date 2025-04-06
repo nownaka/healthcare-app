@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({
         setIsMenuOpen(false);
         
         // ログインページにリダイレクト
-        navigate("/login");
+        // navigate("/login");
       }
       
       // 親コンポーネントにログアウトイベントを通知
