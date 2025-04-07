@@ -16,6 +16,7 @@ const SleepRecord: React.FC = () => {
         { withCredentials: true }
       );
       alert('登録成功!');
+      setSleepTime(0); // ← 入力欄を初期化！
     } catch (error) {
       console.error('なんかエラーコンソールかバックエンドのログミロ:', error);
     }

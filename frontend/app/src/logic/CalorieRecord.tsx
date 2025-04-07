@@ -14,6 +14,7 @@ const CalorieRecord: React.FC = () => {
         {withCredentials: true,} // Cookie を送信するために必要
       );
       alert('登録成功');
+      setCalorie(0); // ← 入力欄を初期化！
     } catch (error) {
       console.error('なんかエラーコンソールかバックエンドのログミロ', error);
     }
