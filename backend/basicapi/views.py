@@ -74,6 +74,13 @@ class CustomTokenObtainPairView(BaseTokenObtainPairView):
         )
 
         return response
+    #ログアウト 
+class LogoutView(APIView):
+    def post(self, request):
+        response = Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)
+        response.delete_cookie('access_token')  # クッキーの削除
+        response.delete_cookie('refresh_token')  # クッキーの削除
+        return response
 
 
 # プロフィールビューセット
