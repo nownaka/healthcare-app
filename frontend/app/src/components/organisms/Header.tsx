@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import SettingImage from "./setting.svg";
 import IconButton from "../molecules/IconButton";
 import { logout } from "../../logic/Logout";
+import DropdownMenu from "./DropdownMenu";
 
 type HeaderProps = {
   title: string;
@@ -27,66 +28,128 @@ const Header: React.FC<HeaderProps> = ({
     if (onMenuClick) onMenuClick("menu"); // ✅ 外部からメニュー開閉を制御可能に
   };
   
-  const handleLogout = async () => {
-    try {
-      // ログアウト関数を呼び出し（await を使用）
-      const success = await logout();
+  // const handleLogout = async () => {
+  //   try {
+  //     // ログアウト関数を呼び出し（await を使用）
+  //     const success = await logout();
   
-      if (success) {
-        // メニューを閉じる
-        setIsMenuOpen(false);
+  //     if (success) {
+  //       // メニューを閉じる
+  //       setIsMenuOpen(false);
         
-        // ログインページにリダイレクト
-        // navigate("/login");
-      }
+  //       // ログインページにリダイレクト
+  //       navigate("/login");
+  //     }
       
-      // 親コンポーネントにログアウトイベントを通知
-      if (onMenuClick) onMenuClick("logout");
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert("ログアウト処理中にエラーが発生しました。");
+  //     // 親コンポーネントにログアウトイベントを通知
+  //     if (onMenuClick) onMenuClick("logout");
+  //   } catch (error) {
+  //     console.error("Logout error:", error);
+  //     alert("ログアウト処理中にエラーが発生しました。");
+  //   }
+  // };
+  const handleMenuAction = async (action: string) => {
+    switch (action) {
+      case "settings":
+        navigate("/settings");
+        break;
+      case "terms":
+        navigate("/terms");
+        break;
+      case "logout":
+        try {
+          const success = await logout();
+          if (success) {
+            navigate("/login");
+          }
+        } catch (error) {
+          console.error("Logout error:", error);
+          alert("ログアウト処理中にエラーが発生しました。");
+        }
+        break;
+      default:
+        break;
     }
+    // 操作後はメニューを閉じる
+    setIsMenuOpen(false);
   };
 
   return (
-    <HeaderContainer>
+    // <HeaderContainer>
+    //   <StyledHeader textColor={textColor}>{title}</StyledHeader>
+
+    //   <UserSection>
+    //     {userName && (
+    //       <StyledUserName textColor={textColor}>{userName}</StyledUserName>
+    //     )}
+    //     <StyledImg src={SettingImage} alt="設定" onClick={toggleMenu} />
+
+    //     {isMenuOpen && (
+    //       <DropdownMenu>
+    //         <IconButton
+    //           label="プロフィール設定"
+    //           iconSrc="/icons/profile.svg"
+    //           onClick={() => onMenuClick && onMenuClick("settings")}
+    //         />
+    //         <IconButton
+    //           label="利用規約"
+    //           iconSrc="/icons/terms.svg"
+    //           onClick={() => onMenuClick && onMenuClick("terms")}
+    //         />
+    //         <IconButton
+    //           label="ログアウト"
+    //           iconSrc="/icons/logout.svg"
+    //           onClick={handleLogout}
+    //         />
+    //       </DropdownMenu>
+    //     )}
+    //   </UserSection>
+    // </HeaderContainer>
+    <HeaderContainercss>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        position: "relative",
+        padding: "5px 10px",
+        background: "#8cb33e",
+        width: "100%"
+        }}>
       <StyledHeader textColor={textColor}>{title}</StyledHeader>
 
-      <UserSection>
+      <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
         {userName && (
           <StyledUserName textColor={textColor}>{userName}</StyledUserName>
         )}
-        <StyledImg src={SettingImage} alt="設定" onClick={toggleMenu} />
+        <StyledImg
+          src={SettingImage}
+          alt="設定"
+          onClick={toggleMenu}
+          style={{ cursor: "pointer" }}
+        />
+      </div>
 
-        {isMenuOpen && (
-          <DropdownMenu>
-            <IconButton
-              label="プロフィール設定"
-              iconSrc="/icons/profile.svg"
-              onClick={() => onMenuClick && onMenuClick("settings")}
-            />
-            <IconButton
-              label="利用規約"
-              iconSrc="/icons/terms.svg"
-              onClick={() => onMenuClick && onMenuClick("terms")}
-            />
-            <IconButton
-              label="ログアウト"
-              iconSrc="/icons/logout.svg"
-              onClick={handleLogout}
-            />
-          </DropdownMenu>
-        )}
-      </UserSection>
-    </HeaderContainer>
+      {isMenuOpen && (
+        <DropdownMenu
+          onNavigate={(menu: string) => {
+            handleMenuAction(menu);
+          }}
+          onLogout={() => {
+            handleMenuAction("logout");
+          }}
+        />
+      )}
+    </div>
+  </HeaderContainercss>
   );
 };
 
 export default Header;
 
 /* スタイリング */
-const HeaderContainer = styled.div`
+const HeaderContainercss = styled.div`
   display: flex;
+  flex-direction: row; /* 横並びを明示 */
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
@@ -118,7 +181,7 @@ const UserSection = styled.div`
   position: relative;
 `;
 
-const DropdownMenu = styled.div`
+const DropdownMenucss = styled.div`
   position: absolute;
   top: 50px;
   right: 0;

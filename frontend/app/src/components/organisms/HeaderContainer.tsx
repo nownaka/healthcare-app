@@ -4,6 +4,8 @@ import Header from "./Header";
 import DropdownMenu from "../molecules/DropdownMenu";
 import { logout } from "../../logic/Logout";
 
+//もう使っているところはないはず！
+
 const HeaderContainer: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
