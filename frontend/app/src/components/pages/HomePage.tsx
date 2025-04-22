@@ -1,7 +1,9 @@
-import React from "react";
-import HeaderContainer from "../organisms/HeaderContainer";
+import React, {useEffect, useState} from "react";
+// import HeaderContainer from "../organisms/HeaderContainer";
+import Header from "../organisms/Header";
 import CustomCalendar from "../organisms/CustomCalendar";
 import styled from "styled-components";
+import axios from "axios";
 import CalorieRecord from "../../logic/CalorieRecord";
 import SleepRecord from "../../logic/SleepRecord";
 import Dashboard from "../../logic/Dashboard";
@@ -23,10 +25,35 @@ const RightContainer = styled.div`
 `;
 
 const HomePage: React.FC = () => {
+  const [userInfo, setUserInfo] = useState<{ user_id: number; message: string } | null>(null);
+  const [userName, setUserName] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/userinfo/", {
+      withCredentials: true, // Cookie を送信するために必要
+      headers: {
+        Accept: "application/json" // JSON レスポンスを要求
+      }
+    })
+      .then((response) => {
+        setUserInfo(response.data);
+        localStorage.setItem("user_id", response.data.user_id);
+        setUserName(response.data.user_id)
+        setLoading(false);
+      })
+      .catch((err: any) => {
+        console.error(err.response?.data || err.message);
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+  
   return (
     <>
       {/* ✅ ヘッダー管理は HeaderContainer に移行 */}
-      <HeaderContainer />
+      <Header title="健康管理アプリ" userName={userName} textColor="white" />
 
       <HomeContainer>
         {/* カレンダー */}
