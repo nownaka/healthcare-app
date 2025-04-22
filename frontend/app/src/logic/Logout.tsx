@@ -20,7 +20,7 @@ export const logout = async () => {
     // ローカルストレージとセッションストレージを削除
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    // sessionStorage.removeItem("access_token");
+    localStorage.removeItem("user_id");
     // sessionStorage.removeItem("refresh_token");
 
     // クッキーの削除はクッキーの登録と同じようにバックエンドからやらないといけない。

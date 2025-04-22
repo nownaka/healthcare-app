@@ -3,6 +3,7 @@ import Calendar, { CalendarProps, CalendarType } from "react-calendar"; // ← C
 import "react-calendar/dist/Calendar.css";
 import styled from "styled-components";
 
+// type Value = CalendarProps["value"];
 type Value = CalendarProps["value"];
 
 const StyledCalendar = styled(Calendar)`
@@ -35,9 +36,6 @@ const ModalContent = styled.div`
   width: 300px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
-
-// カレンダーで扱う値の型（react-calendar 公式の型を利用）
-type Value = CalendarProps["value"];
 
 // 各日付に対する入力値の型
 type Entry = {
@@ -106,7 +104,7 @@ const CustomCalendar: React.FC = () => {
             const entry = entries[dateKey];
             if (entry !== undefined) {
               return (
-                <div style={{ marginTop: "0.1rem", fontSize: "0.6em",  }}>
+                <div style={{ marginTop: "0.1rem", fontSize: "0.6em" }}>
                   <div>体重: {entry.weight} kg</div>
                   <div>睡眠: {entry.sleep} 時間</div>
                 </div>

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import SettingImage from "./setting.svg";
 import IconButton from "../molecules/IconButton";
 import { logout } from "../../logic/Logout";
-import DropdownMenu from "./DropdownMenu";
+import DropdownMenu from "../molecules/DropdownMenu";
 
 type HeaderProps = {
   title: string;
@@ -22,32 +22,33 @@ const Header: React.FC<HeaderProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigate = useNavigate();
-  
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
     if (onMenuClick) onMenuClick("menu"); // ✅ 外部からメニュー開閉を制御可能に
   };
   
-  // const handleLogout = async () => {
-  //   try {
-  //     // ログアウト関数を呼び出し（await を使用）
-  //     const success = await logout();
+  const handleLogout = async () => {
+    try {
+      // ログアウト関数を呼び出し（await を使用）
+      const success = await logout();
   
-  //     if (success) {
-  //       // メニューを閉じる
-  //       setIsMenuOpen(false);
+      if (success) {
+        // メニューを閉じる
+        setIsMenuOpen(false);
         
-  //       // ログインページにリダイレクト
-  //       navigate("/login");
-  //     }
+        // ログインページにリダイレクト
+        navigate("/");
+      }
       
-  //     // 親コンポーネントにログアウトイベントを通知
-  //     if (onMenuClick) onMenuClick("logout");
-  //   } catch (error) {
-  //     console.error("Logout error:", error);
-  //     alert("ログアウト処理中にエラーが発生しました。");
-  //   }
-  // };
+      // 親コンポーネントにログアウトイベントを通知
+      if (onMenuClick) onMenuClick("logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("ログアウト処理中にエラーが発生しました。");
+    }
+  };
+    
   const handleMenuAction = async (action: string) => {
     switch (action) {
       case "settings":
@@ -60,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({
         try {
           const success = await logout();
           if (success) {
-            navigate("/login");
+            navigate("/");
           }
         } catch (error) {
           console.error("Logout error:", error);
@@ -106,41 +107,45 @@ const Header: React.FC<HeaderProps> = ({
     //   </UserSection>
     // </HeaderContainer>
     <HeaderContainercss>
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        position: "relative",
-        padding: "5px 10px",
-        background: "#8cb33e",
-        width: "100%"
-        }}>
-      <StyledHeader textColor={textColor}>{title}</StyledHeader>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          position: "relative",
+          padding: "5px 10px",
+          background: "#8cb33e",
+          width: "100%",
+        }}
+      >
+        <StyledHeader textColor={textColor}>{title}</StyledHeader>
 
-      <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-        {userName && (
-          <StyledUserName textColor={textColor}>{userName}</StyledUserName>
+        <div
+          style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}
+        >
+          {userName && (
+            <StyledUserName textColor={textColor}>{userName}</StyledUserName>
+          )}
+          <StyledImg
+            src={SettingImage}
+            alt="設定"
+            onClick={toggleMenu}
+            style={{ cursor: "pointer" }}
+          />
+        </div>
+
+        {isMenuOpen && (
+          <DropdownMenu
+            onNavigate={(menu: string) => {
+              handleMenuAction(menu);
+            }}
+            onLogout={() => {
+              handleMenuAction("logout");
+            }}
+          />
         )}
-        <StyledImg
-          src={SettingImage}
-          alt="設定"
-          onClick={toggleMenu}
-          style={{ cursor: "pointer" }}
-        />
       </div>
-
-      {isMenuOpen && (
-        <DropdownMenu
-          onNavigate={(menu: string) => {
-            handleMenuAction(menu);
-          }}
-          onLogout={() => {
-            handleMenuAction("logout");
-          }}
-        />
-      )}
-    </div>
-  </HeaderContainercss>
+    </HeaderContainercss>
   );
 };
 
