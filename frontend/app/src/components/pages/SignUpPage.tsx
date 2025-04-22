@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
+    name: "",
     nickname: "",
     email: "",
     password: "",
@@ -20,19 +21,48 @@ const SignupForm = () => {
     formEvent.preventDefault();
 
     try {
+      const loginData = {
+        email: formData.email,
+        password: formData.password,
+      };
       // 情報登録
       const resisterResponse = await axios.post<{ message: string }>(
         "http://localhost:8000/api/register/",
-        formData
+        loginData
       );
       console.log(resisterResponse.data.message);
 
       // トークン取得
       const token = await axios.post(
         "http://localhost:8000/api/token/",
+        loginData,
         {
-          email: formData.email,
-          password: formData.password,
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true, // HttpOnly Cookieを利用するために必要
+        }
+      );
+
+      // トークンを利用して userId を取得する
+      const userInfoResponse = await axios.get<{ user_id: string }>(
+        "http://localhost:8000/api/userinfo/",
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true, // HttpOnly Cookieを利用するために必要
+        }
+      );
+
+      const userId = userInfoResponse.data.user_id;
+
+      // その他の情報を登録
+      const updateResponse = await axios.post(
+        "http://localhost:8000/api/user-profiles/",
+        {
+          user: userId,
+          name: formData.name,
+          nickname: formData.nickname,
+          height: formData.height,
+          weight: formData.weight,
+          goal: formData.goal,
         },
         {
           headers: { "Content-Type": "application/json" },
@@ -84,6 +114,7 @@ const SignupForm = () => {
   };
 
   const placeholders: { [key in keyof typeof formData]: string } = {
+    name: "例: 健康 太郎",
     nickname: "例: Taro123",
     email: "例: example@email.com",
     password: "パスワードを入力",
@@ -93,6 +124,7 @@ const SignupForm = () => {
   };
 
   const labels: { [key in keyof typeof formData]: string } = {
+    name: "氏名",
     nickname: "ニックネーム",
     email: "メールアドレス",
     password: "パスワード",
