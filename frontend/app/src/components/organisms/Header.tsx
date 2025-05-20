@@ -47,6 +47,8 @@ const Header: React.FC<HeaderProps> = ({
       console.error("Logout error:", error);
       alert("ログアウト処理中にエラーが発生しました。");
     }
+    // 操作後はメニューを閉じる
+    setIsMenuOpen(false);
   };
     
   const handleMenuAction = async (action: string) => {
@@ -76,76 +78,42 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    // <HeaderContainer>
-    //   <StyledHeader textColor={textColor}>{title}</StyledHeader>
-
-    //   <UserSection>
-    //     {userName && (
-    //       <StyledUserName textColor={textColor}>{userName}</StyledUserName>
-    //     )}
-    //     <StyledImg src={SettingImage} alt="設定" onClick={toggleMenu} />
-
-    //     {isMenuOpen && (
-    //       <DropdownMenu>
-    //         <IconButton
-    //           label="プロフィール設定"
-    //           iconSrc="/icons/profile.svg"
-    //           onClick={() => onMenuClick && onMenuClick("settings")}
-    //         />
-    //         <IconButton
-    //           label="利用規約"
-    //           iconSrc="/icons/terms.svg"
-    //           onClick={() => onMenuClick && onMenuClick("terms")}
-    //         />
-    //         <IconButton
-    //           label="ログアウト"
-    //           iconSrc="/icons/logout.svg"
-    //           onClick={handleLogout}
-    //         />
-    //       </DropdownMenu>
-    //     )}
-    //   </UserSection>
-    // </HeaderContainer>
     <HeaderContainercss>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          position: "relative",
-          padding: "5px 10px",
-          background: "#8cb33e",
-          width: "100%",
-        }}
-      >
-        <StyledHeader textColor={textColor}>{title}</StyledHeader>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        position: "relative",
+        padding: "5px 10px",
+        background: "#8cb33e",
+        width: "100%"
+        }}>
+      <StyledHeader textColor={textColor}>{title}</StyledHeader>
 
-        <div
-          style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}
-        >
-          {userName && (
-            <StyledUserName textColor={textColor}>{userName}</StyledUserName>
-          )}
-          <StyledImg
-            src={SettingImage}
-            alt="設定"
-            onClick={toggleMenu}
-            style={{ cursor: "pointer" }}
-          />
-        </div>
-
-        {isMenuOpen && (
-          <DropdownMenu
-            onNavigate={(menu: string) => {
-              handleMenuAction(menu);
-            }}
-            onLogout={() => {
-              handleMenuAction("logout");
-            }}
-          />
+      <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
+        {userName && (
+          <StyledUserName textColor={textColor}>{userName}</StyledUserName>
         )}
+        <StyledImg
+          src={SettingImage}
+          alt="設定"
+          onClick={toggleMenu}
+          style={{ cursor: "pointer" }}
+        />
       </div>
-    </HeaderContainercss>
+
+      {isMenuOpen && (
+        <DropdownMenu
+          onNavigate={(menu: string) => {
+            handleMenuAction(menu);
+          }}
+          onLogout={() => {
+            handleMenuAction("logout");
+          }}
+        />
+      )}
+    </div>
+  </HeaderContainercss>
   );
 };
 

@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import RegisterView, CustomTokenObtainPairView, UserProfileViewSet, WeightRecordViewSet, CalorieRecordViewSet, SleepRecordViewSet, AuthStatusView, CookieUserInfoView,LogoutView
+from .views import RegisterView, CustomTokenObtainPairView, UserProfileViewSet, WeightRecordViewSet, CalorieRecordViewSet, SleepRecordViewSet, AuthStatusView, CookieUserInfoView,LogoutView, DailyRecordUpsertAPIView
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -21,7 +21,7 @@ urlpatterns = [
     path('userinfo/', CookieUserInfoView.as_view(), name='user_info'),
     # ログアウト
     path('logout/', LogoutView.as_view(), name='logout'),
-
     path('', include(router.urls)),
+    path("daily-records/", DailyRecordUpsertAPIView.as_view(), name="daily-records"),
 
 ]

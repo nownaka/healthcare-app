@@ -11,6 +11,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.backends import TokenBackend
 from django.conf import settings
+import datetime as _dt     # ★ これを追加
 
 # ログ設定
 logger = logging.getLogger(__name__)
@@ -156,8 +157,6 @@ class CookieUserInfoView(APIView):
                 signing_key=settings.SECRET_KEY  # または settings.SIMPLE_JWT['SIGNING_KEY'] があればそちらを使用
             )
             token_data = token_backend.decode(access_token, verify=True)
-            # token_backend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
-            # token_data = token_backend.decode(access_token, verify=True)
         except Exception as e:
             return Response({"error": "Invalid token", "details": str(e)},
                             status=status.HTTP_401_UNAUTHORIZED)
@@ -170,3 +169,77 @@ class CookieUserInfoView(APIView):
         
         return Response({"user_id": user_id, "message": "Token is valid. User authenticated."},
                         status=status.HTTP_200_OK)
+
+class DailyRecordUpsertAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        data = request.data
+
+        # ────────────────────────────────────────────────
+        # 1. recorded_at を date 型に変換（必須）
+        # ────────────────────────────────────────────────
+        date_str = data.get("recorded_at")
+        if not date_str:
+            return Response({"detail": "`recorded_at` は必須です"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            recorded_at = _dt.date.fromisoformat(date_str)
+        except ValueError:
+            return Response({"detail": "日付フォーマットは YYYY‑MM‑DD で指定してください"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # ────────────────────────────────────────────────
+        # 2. weight / sleep の取得と簡易バリデーション
+        # ────────────────────────────────────────────────
+        weight = data.get("weight")
+        sleep  = data.get("sleep_time")
+
+        if weight is None and sleep is None:
+            return Response({"detail": "`weight` か `sleep_time` のどちらかは必要です"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            weight = float(weight) if weight is not None else None
+        except (TypeError, ValueError):
+            return Response({"detail": "`weight` は数値で指定してください"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            sleep = float(sleep) if sleep is not None else None
+        except (TypeError, ValueError):
+            return Response({"detail": "`sleep_time` は数値で指定してください"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # ────────────────────────────────────────────────
+        # 3. Upsert
+        # ────────────────────────────────────────────────
+        result  = {}
+        created_any = False
+
+        if weight is not None:
+            weight_obj, created = WeightRecord.objects.update_or_create(
+                user=user,
+                recorded_at=recorded_at,
+                defaults={"weight": weight},
+            )
+            created_any |= created
+            result["weight_record"] = WeightRecordSerializer(weight_obj).data
+
+        if sleep is not None:
+            sleep_obj, created = SleepRecord.objects.update_or_create(
+                user=user,
+                recorded_at=recorded_at,
+                defaults={"sleep_time": sleep},
+            )
+            created_any |= created
+            result["sleep_record"] = SleepRecordSerializer(sleep_obj).data
+
+        # ────────────────────────────────────────────────
+        # 4. 応答
+        # ────────────────────────────────────────────────
+        return Response(
+            result,
+            status=status.HTTP_201_CREATED if created_any else status.HTTP_200_OK,
+        )

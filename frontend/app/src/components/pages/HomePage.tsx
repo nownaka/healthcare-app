@@ -31,23 +31,31 @@ const HomePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/userinfo/", {
-      withCredentials: true, // Cookie を送信するために必要
-      headers: {
-        Accept: "application/json" // JSON レスポンスを要求
-      }
-    })
-      .then((response) => {
-        setUserInfo(response.data);
-        localStorage.setItem("user_id", response.data.user_id);
-        setUserName(response.data.user_id)
-        setLoading(false);
-      })
-      .catch((err: any) => {
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const { data: basic } = await axios.get("http://localhost:8000/api/userinfo/", {
+          withCredentials: true,
+          headers: { Accept: "application/json" }
+        });
+        const userId = basic.user_id;
+        localStorage.setItem("user_id", userId);
+  
+        // ユーザー詳細 API 呼び出し
+        const { data: detail } = await axios.get(`http://localhost:8000/api/user-profiles/${userId}/`, {
+          withCredentials: true,
+          headers: { Accept: "application/json" }
+        });
+        setUserName(detail.name);
+      } catch (err: any) {
         console.error(err.response?.data || err.message);
         setError(err.message);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+  
+    fetchUser();
   }, []);
   
   return (

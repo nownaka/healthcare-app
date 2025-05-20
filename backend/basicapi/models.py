@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils.timezone import now  # 現在の日時を取得するためのヘルパー関数
+import uuid
 
 # カスタムマネージャー
 class CustomUserManager(BaseUserManager):
@@ -74,6 +75,14 @@ class WeightRecord(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.weight}kg on {self.recorded_at}"
+
+    def save(self, *args, **kwargs):
+        # recorded_at がセットされていれば自動計算
+        if self.recorded_at:
+            self.year  = self.recorded_at.year
+            self.month = self.recorded_at.month
+            self.week  = self.recorded_at.isocalendar()[1]
+        super().save(*args, **kwargs)
 
 # カロリー記録テーブル
 class CalorieRecord(models.Model):

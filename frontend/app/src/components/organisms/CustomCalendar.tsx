@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import Calendar, { CalendarProps, CalendarType } from "react-calendar"; // ← CalendarType を追加
 import "react-calendar/dist/Calendar.css";
 import styled from "styled-components";
@@ -67,22 +68,42 @@ const CustomCalendar: React.FC = () => {
   };
 
   // モーダル内の入力を保存する処理
-  const handleSave = () => {
-    if (selectedDate && weight !== "" && sleepTime !== "") {
-      const dateKey = selectedDate.toISOString().split("T")[0]; // 例: "2025-04-14"
+  const handleSave = async () => {
+    if (!selectedDate || weight === "" || sleepTime === "") {
+      alert("体重と睡眠時間の両方を入力してください。");
+      return;
+    }
+
+    const dateKey = selectedDate.toISOString().split("T")[0]; // "2025-04-14" など
+    const record = {
+      recorded_at: dateKey,
+      weight:    Number(weight),
+      sleep_time: Number(sleepTime),
+    };
+
+    try {
+      // 1) ローカル state を更新
       setEntries((prev) => ({
         ...prev,
         [dateKey]: {
-          weight: Number(weight),
-          sleep: Number(sleepTime),
+          weight: record.weight,
+          sleep:  record.sleep_time,
         },
       }));
-      // 入力後、フィールドをクリアしモーダルを閉じる
+      // 2) バックエンドに upsert リクエスト
+      await axios.post(
+        "http://localhost:8000/api/daily-records/",
+        record,
+        { withCredentials: true }
+      );
+  
+      // 3) フィールドをクリアしてモーダルを閉じる
       setWeight("");
       setSleepTime("");
       setShowModal(false);
-    } else {
-      alert("体重と睡眠時間の両方を入力してください。");
+    } catch (err: any) {
+      console.error(err.response?.data || err.message);
+      alert("保存に失敗しました。もう一度お試しください。");
     }
   };
 
@@ -104,7 +125,7 @@ const CustomCalendar: React.FC = () => {
             const entry = entries[dateKey];
             if (entry !== undefined) {
               return (
-                <div style={{ marginTop: "0.1rem", fontSize: "0.6em" }}>
+                <div style={{ marginTop: "0.1rem", fontSize: "0.6em",  }}>
                   <div>体重: {entry.weight} kg</div>
                   <div>睡眠: {entry.sleep} 時間</div>
                 </div>
