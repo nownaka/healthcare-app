@@ -41,6 +41,8 @@ const GraphCard = styled.div`
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
   height: 300px;
+  width: 100%;
+  box-sizing: border-box;
 `;
 
 const ControlContainer = styled.div`
@@ -108,7 +110,7 @@ const HealthDataGraph: React.FC<HealthDataGraphProps> = ({
 
   const getOptions = (title: string, unit: string): any => ({
     responsive: true,
-    maintainAspectRatio: false,
+    maintainAspectRatio: 2,
     plugins: {
       legend: {
         position: 'top' as const,
