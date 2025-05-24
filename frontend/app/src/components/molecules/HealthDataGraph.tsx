@@ -72,8 +72,8 @@ const HealthDataGraph: React.FC<HealthDataGraphProps> = ({ type, data, title, un
 
   const processData = (rawData: DataPoint[]) => {
     const now = dayjs();
-    let startDate;
-    let dateFormat;
+    let startDate: dayjs.Dayjs;
+    let dateFormat: string;
 
     if (viewMode === 'week') {
       startDate = now.subtract(7, 'day');
