@@ -40,8 +40,8 @@ const GraphCard = styled.div`
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  height: 350px;
-  width: 100%;
+  height: 100%;
+  width: 600px;
   box-sizing: border-box;
 `;
 
@@ -193,28 +193,28 @@ const HealthDataGraph: React.FC<HealthDataGraphProps> = ({
         <GraphCard>
         <div style={{ display: 'flex', alignItems: 'center'}}>
           <img src="/icons/体重.png" alt="体重アイコン" width={50} height={50} style={{ marginRight: 8 }} />
-          <h4 style={{ margin: 0 }}>体重</h4>
+          <h1 style={{ margin: 0 }}>体重</h1>
         </div>
         {weightChartData && <Line options={getOptions('体重', 'kg')} data={weightChartData} />} 
         </GraphCard>
         <GraphCard>
         <div style={{ display: 'flex', alignItems: 'center'}}>
           <img src="/icons/運動.png" alt="運動アイコン" width={50} height={50} style={{ marginRight: 8 }} />
-          <h4 style={{ margin: 0 }}>運動量</h4>
+          <h1 style={{ margin: 0 }}>運動量</h1>
         </div>
         {exerciseChartData && <Line options={getOptions('運動量', 'kcal')} data={exerciseChartData} />}
         </GraphCard>
         <GraphCard>
         <div style={{ display: 'flex', alignItems: 'center'}}>
           <img src="/icons/カロリー.png" alt="カロリーアイコン" width={50} height={50} style={{ marginRight: 8 }} />
-          <h4 style={{ margin: 0 }}>カロリー</h4>
+          <h1 style={{ margin: 0 }}>カロリー</h1>
         </div>
         {calorieChartData && <Line options={getOptions('カロリー', 'kcal')} data={calorieChartData} />}
         </GraphCard>
         <GraphCard>
         <div style={{ display: 'flex', alignItems: 'center'}}>
           <img src="/icons/睡眠.png" alt="睡眠アイコン" width={50} height={50} style={{ marginRight: 8 }} />
-          <h4 style={{ margin: 0 }}>睡眠時間</h4>
+          <h1 style={{ margin: 0 }}>睡眠時間</h1>
         </div>
         {sleepChartData && <Line options={getOptions('睡眠時間', '時間')} data={sleepChartData} />}
         </GraphCard>
