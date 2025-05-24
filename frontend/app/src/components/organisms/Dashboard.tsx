@@ -32,18 +32,12 @@ const Dashboard: React.FC = () => {
         <StatisticCard
           title="今日のカロリー"
           value={calorieGraphData?.values[calorieGraphData.values.length - 1] || 0}
-          graphData={{
-            title: "カロリー推移",
-            data: calorieGraphData
-          }}
+
         />
         <StatisticCard
           title="昨日の睡眠時間"
           value={`${sleepGraphData?.values[sleepGraphData.values.length - 2] || 0}時間`}
-          graphData={{
-            title: "睡眠時間推移",
-            data: sleepGraphData
-          }}
+
         />
       </GridContainer>
       <HealthDataDisplay />
