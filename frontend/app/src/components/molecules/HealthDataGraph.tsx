@@ -190,16 +190,32 @@ const HealthDataGraph: React.FC<HealthDataGraphProps> = ({
       </ControlContainer>
       <GraphContainer>
         <GraphCard>
-          {weightChartData && <Line options={getOptions('体重', 'kg')} data={weightChartData} />}
+        <div style={{ display: 'flex', alignItems: 'center'}}>
+          <img src="/icons/体重.png" alt="体重アイコン" width={50} height={50} style={{ marginRight: 8 }} />
+          <h4 style={{ margin: 0 }}>体重</h4>
+        </div>
+        {weightChartData && <Line options={getOptions('体重', 'kg')} data={weightChartData} />} 
         </GraphCard>
         <GraphCard>
-          {exerciseChartData && <Line options={getOptions('運動量', 'kcal')} data={exerciseChartData} />}
+        <div style={{ display: 'flex', alignItems: 'center'}}>
+          <img src="/icons/運動.png" alt="運動アイコン" width={50} height={50} style={{ marginRight: 8 }} />
+          <h4 style={{ margin: 0 }}>運動量</h4>
+        </div>
+        {exerciseChartData && <Line options={getOptions('運動量', 'kcal')} data={exerciseChartData} />}
         </GraphCard>
         <GraphCard>
-          {calorieChartData && <Line options={getOptions('カロリー', 'kcal')} data={calorieChartData} />}
+        <div style={{ display: 'flex', alignItems: 'center'}}>
+          <img src="/icons/カロリー.png" alt="カロリーアイコン" width={50} height={50} style={{ marginRight: 8 }} />
+          <h4 style={{ margin: 0 }}>カロリー</h4>
+        </div>
+        {calorieChartData && <Line options={getOptions('カロリー', 'kcal')} data={calorieChartData} />}
         </GraphCard>
         <GraphCard>
-          {sleepChartData && <Line options={getOptions('睡眠時間', '時間')} data={sleepChartData} />}
+        <div style={{ display: 'flex', alignItems: 'center'}}>
+          <img src="/icons/睡眠.png" alt="睡眠アイコン" width={50} height={50} style={{ marginRight: 8 }} />
+          <h4 style={{ margin: 0 }}>睡眠時間</h4>
+        </div>
+        {sleepChartData && <Line options={getOptions('睡眠時間', '時間')} data={sleepChartData} />}
         </GraphCard>
       </GraphContainer>
     </>
