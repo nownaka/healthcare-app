@@ -25,10 +25,12 @@ const HealthDataDisplay: React.FC = () => {
 
   const fetchData = async () => {
     try {
+      const userId = localStorage.getItem("user_id");
+  
       const [weightResponse, calorieResponse, sleepResponse] = await Promise.all([
-        axios.get('http://localhost:8000/api/weight-records/', { withCredentials: true }),
-        axios.get('http://localhost:8000/api/calorie-records/', { withCredentials: true }),
-        axios.get('http://localhost:8000/api/sleep-records/', { withCredentials: true })
+        axios.get(`http://localhost:8000/api/weight-records/?user=${userId}`, { withCredentials: true }),
+        axios.get(`http://localhost:8000/api/calorie-records/?user=${userId}`, { withCredentials: true }),
+        axios.get(`http://localhost:8000/api/sleep-records/?user=${userId}`, { withCredentials: true })
       ]);
 
       // 運動量データはカロリーデータと同じものを使用
