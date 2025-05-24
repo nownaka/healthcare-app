@@ -1,3 +1,4 @@
+// グラフを呼び出して情報を渡すコンポーネント
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
