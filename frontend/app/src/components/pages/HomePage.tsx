@@ -4,9 +4,7 @@ import Header from "../organisms/Header";
 import CustomCalendar from "../organisms/CustomCalendar";
 import styled from "styled-components";
 import axios from "axios";
-import CalorieRecord from "../../logic/CalorieRecord";
-import SleepRecord from "../../logic/SleepRecord";
-import Dashboard from "../../logic/Dashboard";
+import Dashboard from "../organisms/Dashboard";
 
 const HomeContainer = styled.div`
   display: flex;
