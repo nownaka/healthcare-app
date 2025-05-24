@@ -19,6 +19,7 @@ interface HealthData {
 const HealthDataDisplay: React.FC = () => {
   const [weightData, setWeightData] = useState<HealthData[]>([]);
   const [calorieData, setCalorieData] = useState<HealthData[]>([]);
+  const [exerciseData, setExerciseData] = useState<HealthData[]>([]);
   const [sleepData, setSleepData] = useState<HealthData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +30,9 @@ const HealthDataDisplay: React.FC = () => {
         axios.get('http://localhost:8000/api/calorie-records/', { withCredentials: true }),
         axios.get('http://localhost:8000/api/sleep-records/', { withCredentials: true })
       ]);
+
+      // 運動量データはカロリーデータと同じものを使用
+      const exerciseResponse = calorieResponse;
 
       // 体重データの変換
       const weightRecords = weightResponse.data.map((record: any) => ({
@@ -48,8 +52,15 @@ const HealthDataDisplay: React.FC = () => {
         value: record.sleep_time
       }));
 
+      // 運動量データの変換（カロリーデータと同じ）
+      const exerciseRecords = exerciseResponse.data.map((record: any) => ({
+        date: record.recorded_at,
+        value: record.calorie
+      }));
+
       setWeightData(weightRecords);
       setCalorieData(calorieRecords);
+      setExerciseData(exerciseRecords);
       setSleepData(sleepRecords);
     } catch (error) {
       console.error('データの取得に失敗しました:', error);
@@ -69,26 +80,13 @@ const HealthDataDisplay: React.FC = () => {
   return (
     <Container>
       <HealthDataGraph
-        type="weight"
-        data={weightData}
-        title="体重"
-        unit="kg"
-      />
-      <HealthDataGraph
-        type="calorie"
-        data={calorieData}
-        title="カロリー"
-        unit="kcal"
-      />
-      <HealthDataGraph
-        type="sleep"
-        data={sleepData}
-        title="睡眠時間"
-        unit="時間"
+        weightData={weightData}
+        calorieData={calorieData}
+        exerciseData={exerciseData}
+        sleepData={sleepData}
       />
     </Container>
   );
 };
 
 export default HealthDataDisplay;
-
