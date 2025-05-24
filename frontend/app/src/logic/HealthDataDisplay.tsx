@@ -2,14 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import HealthDataGraph from './HealthDataGraph';
+import HealthDataGraph from '../components/molecules/HealthDataGraph';
 
-const Container = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
+// const Container = styled.div`
+//   padding: 20px;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 20px;
+// `;
 
 interface HealthData {
   date: string;
@@ -80,14 +80,12 @@ const HealthDataDisplay: React.FC = () => {
   }
 
   return (
-    <Container>
       <HealthDataGraph
         weightData={weightData}
         calorieData={calorieData}
         exerciseData={exerciseData}
         sleepData={sleepData}
       />
-    </Container>
   );
 };
 
