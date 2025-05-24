@@ -114,9 +114,10 @@ const HealthDataGraph: React.FC<HealthDataGraphProps> = ({
     plugins: {
       legend: {
         position: 'top' as const,
+        display: false, // （青枠）を消す
       },
       title: {
-        display: true,
+        display: false,
         text: `${title} (${unit})`
       }
     },
