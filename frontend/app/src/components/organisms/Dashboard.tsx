@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useGraphData } from "../../hooks/useGraphData";
 import StatisticCard from "../molecules/StatisticCard";
+import HealthDataDisplay from "../molecules/HealthDataDisplay";
 
 const DashboardContainer = styled.div`
   background-color: white;
@@ -45,6 +46,7 @@ const Dashboard: React.FC = () => {
           }}
         />
       </GridContainer>
+      <HealthDataDisplay />
     </DashboardContainer>
   );
 };
