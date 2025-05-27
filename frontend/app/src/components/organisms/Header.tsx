@@ -53,10 +53,13 @@ const Header: React.FC<HeaderProps> = ({
     
   const handleMenuAction = async (action: string) => {
     switch (action) {
-      case "settings":
+      case "/home":
+        navigate("/home");
+        break;
+      case "/settings":
         navigate("/settings");
         break;
-      case "terms":
+      case "/terms":
         navigate("/terms");
         break;
       case "logout":
