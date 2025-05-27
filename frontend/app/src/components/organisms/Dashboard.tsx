@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useGraphData } from "../../hooks/useGraphData";
 import StatisticCard from "../molecules/StatisticCard";
-import HealthDataDisplay from "../../logic/HealthDataDisplay";
+import HealthDataDisplay from "../../logic/old/HealthDataDisplay";
 
 const DashboardContainer = styled.div`
   background-color: white;
@@ -21,6 +21,7 @@ const GridContainer = styled.div`
 
 const Dashboard: React.FC = () => {
   const { calorieGraphData, sleepGraphData, loading, error } = useGraphData();
+  console.log(sleepGraphData);
 
   if (loading) return <div>読み込み中...</div>;
   if (error) return <div>{error}</div>;

@@ -48,7 +48,9 @@ export const useGraphData = (): UseGraphDataReturn => {
 
       // 睡眠データの取得と処理
       const sleepRecords = await getSleepRecords(startDate, endDate);
+      console.log('Sleep Records:', sleepRecords);
       const sleepData = processSleepData(sleepRecords, days);
+      console.log('Processed Sleep Data:', sleepData);
       setSleepGraphData(sleepData);
 
       setError(null);
@@ -103,7 +105,7 @@ export const useGraphData = (): UseGraphDataReturn => {
       const recordDate = new Date(record.date);
       const index = days - 1 - Math.floor((today.getTime() - recordDate.getTime()) / (1000 * 60 * 60 * 24));
       if (index >= 0 && index < days) {
-        values[index] = record.duration;
+        values[index] = record.sleep_time / 60; // 分から時間に変換
       }
     });
 
