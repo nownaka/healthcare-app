@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import HealthDataGraph from '../../components/molecules/HealthDataGraph';
+import HealthDataGraph from '../components/molecules/HealthDataGraph';
 
 // const Container = styled.div`
 //   padding: 20px;
