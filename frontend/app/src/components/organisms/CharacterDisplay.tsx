@@ -4,8 +4,8 @@ import styled from "styled-components";
 // キャラクター表示のコンテナ
 const CharacterContainer = styled.div`
   position: fixed;
-  bottom: 5vh;
-  right: 5vw;
+  bottom: 0vh;
+  right: 0vw;
   z-index: 1000;
   background: transparent;
   padding: 20px;
@@ -31,10 +31,10 @@ const CharacterContainer = styled.div`
 const CharacterImage = styled.img`
   width: 25vw;
   height: 25vw;
-  max-width: 300px;
-  max-height: 300px;
-  min-width: 150px;
-  min-height: 150px;
+  max-width: 1000px;
+  max-height: 1000px;
+  min-width: 300px;
+  min-height: 300px;
   object-fit: contain;
   margin-bottom: 10px;
 `;
