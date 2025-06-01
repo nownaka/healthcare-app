@@ -4,14 +4,13 @@ import styled from "styled-components";
 // キャラクター表示のコンテナ
 const CharacterContainer = styled.div`
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 5vh;
+  right: 5vw;
   z-index: 1000;
-  background: white;
-  border-radius: 15px;
+  background: transparent;
   padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  max-width: 300px;
+  max-width: 40vw;
+  min-width: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,8 +29,12 @@ const CharacterContainer = styled.div`
 `;
 
 const CharacterImage = styled.img`
-  width: 120px;
-  height: 120px;
+  width: 25vw;
+  height: 25vw;
+  max-width: 300px;
+  max-height: 300px;
+  min-width: 150px;
+  min-height: 150px;
   object-fit: contain;
   margin-bottom: 10px;
 `;

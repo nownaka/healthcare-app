@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Calendar, { CalendarProps, CalendarType } from "react-calendar"; // ← CalendarType を追加
 import "react-calendar/dist/Calendar.css";
@@ -69,6 +69,32 @@ const CustomCalendar: React.FC = () => {
   const [showCharacter, setShowCharacter] = useState<boolean>(false);
   const [characterData, setCharacterData] = useState<HealthEvaluation | null>(null);
 
+  // 既存データを取得
+  useEffect(() => {
+    const fetchExistingData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/daily-records/", {
+          withCredentials: true,
+        });
+        
+        const existingEntries: Record<string, Entry> = {};
+        response.data.forEach((record: any) => {
+          const dateKey = record.recorded_at;
+          existingEntries[dateKey] = {
+            weight: record.weight,
+            sleep: record.sleep_time,
+          };
+        });
+        
+        setEntries(existingEntries);
+      } catch (err: any) {
+        console.error("既存データの取得に失敗しました:", err.response?.data || err.message);
+      }
+    };
+
+    fetchExistingData();
+  }, []);
+
   // 前日の体重を取得する関数
   const getPreviousWeight = (currentDateKey: string): number | null => {
     const currentDate = new Date(currentDateKey);
@@ -119,8 +145,21 @@ const CustomCalendar: React.FC = () => {
         { withCredentials: true }
       );
 
-      // 3) 健康データの評価を実行
-      const previousWeight = getPreviousWeight(dateKey);
+      // 3) 健康データの評価を実行（更新されたentriesを使用）
+      const updatedEntries = {
+        ...entries,
+        [dateKey]: {
+          weight: record.weight,
+          sleep: record.sleep_time,
+        },
+      };
+      
+      const currentDate = new Date(dateKey);
+      const previousDate = new Date(currentDate);
+      previousDate.setDate(previousDate.getDate() - 1);
+      const previousDateKey = previousDate.toISOString().split("T")[0];
+      const previousWeight = updatedEntries[previousDateKey]?.weight || null;
+      
       const weightEval = evaluateWeightChange(record.weight, previousWeight);
       const sleepEval = evaluateSleepTime(record.sleep_time);
       
