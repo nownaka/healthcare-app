@@ -72,8 +72,6 @@ const HomePage: React.FC = () => {
         <RightContainer>
           <Dashboard /> 
         </RightContainer>
-
-
       </HomeContainer>
     </>
   );

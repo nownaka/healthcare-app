@@ -4,6 +4,7 @@ import { useGraphData } from "../../hooks/useGraphData";
 import StatisticCard from "../molecules/StatisticCard";
 import HealthDataDisplay from "../../logic/HealthDataDisplay";
 
+
 const DashboardContainer = styled.div`
   background-color: white;
   padding: 20px;
