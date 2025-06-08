@@ -64,19 +64,24 @@ const CustomCalendar: React.FC = () => {
 
   // 各日付に入力された値を記録する（キーは ISO 形式の日付文字列）
   const [entries, setEntries] = useState<Record<string, Entry>>({});
-  
+
   // キャラクター表示の状態管理
   const [showCharacter, setShowCharacter] = useState<boolean>(false);
-  const [characterData, setCharacterData] = useState<HealthEvaluation | null>(null);
+  const [characterData, setCharacterData] = useState<HealthEvaluation | null>(
+    null
+  );
 
   // 既存データを取得
   useEffect(() => {
     const fetchExistingData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/daily-records/", {
-          withCredentials: true,
-        });
-        
+        const response = await axios.get(
+          "http://localhost:8000/api/daily-records/",
+          {
+            withCredentials: true,
+          }
+        );
+
         const existingEntries: Record<string, Entry> = {};
         response.data.forEach((record: any) => {
           const dateKey = record.recorded_at;
@@ -85,10 +90,13 @@ const CustomCalendar: React.FC = () => {
             sleep: record.sleep_time,
           };
         });
-        
+
         setEntries(existingEntries);
       } catch (err: any) {
-        console.error("既存データの取得に失敗しました:", err.response?.data || err.message);
+        console.error(
+          "既存データの取得に失敗しました:",
+          err.response?.data || err.message
+        );
       }
     };
 
@@ -101,7 +109,7 @@ const CustomCalendar: React.FC = () => {
     const previousDate = new Date(currentDate);
     previousDate.setDate(previousDate.getDate() - 1);
     const previousDateKey = previousDate.toISOString().split("T")[0];
-    
+
     const previousEntry = entries[previousDateKey];
     return previousEntry ? previousEntry.weight : null;
   };
@@ -125,7 +133,7 @@ const CustomCalendar: React.FC = () => {
     const dateKey = selectedDate.toISOString().split("T")[0]; // "2025-04-14" など
     const record = {
       recorded_at: dateKey,
-      weight:    Number(weight),
+      weight: Number(weight),
       sleep_time: Number(sleepTime),
     };
 
@@ -135,15 +143,13 @@ const CustomCalendar: React.FC = () => {
         ...prev,
         [dateKey]: {
           weight: record.weight,
-          sleep:  record.sleep_time,
+          sleep: record.sleep_time,
         },
       }));
       // 2) バックエンドに upsert リクエスト
-      await axios.post(
-        "http://localhost:8000/api/daily-records/",
-        record,
-        { withCredentials: true }
-      );
+      await axios.post("http://localhost:8000/api/daily-records/", record, {
+        withCredentials: true,
+      });
 
       // 3) 健康データの評価を実行（更新されたentriesを使用）
       const updatedEntries = {
@@ -153,23 +159,23 @@ const CustomCalendar: React.FC = () => {
           sleep: record.sleep_time,
         },
       };
-      
+
       const currentDate = new Date(dateKey);
       const previousDate = new Date(currentDate);
       previousDate.setDate(previousDate.getDate() - 1);
       const previousDateKey = previousDate.toISOString().split("T")[0];
       const previousWeight = updatedEntries[previousDateKey]?.weight || null;
-      
+
       const weightEval = evaluateWeightChange(record.weight, previousWeight);
       const sleepEval = evaluateSleepTime(record.sleep_time);
-      
+
       // 総合評価を取得（カロリーデータは現在未実装のためnull）
       const overallEval = getOverallEvaluation(weightEval, null, sleepEval);
-      
+
       // 4) キャラクター表示を設定
       setCharacterData(overallEval);
       setShowCharacter(true);
-  
+
       // 5) フィールドをクリアしてモーダルを閉じる
       setWeight("");
       setSleepTime("");
@@ -191,6 +197,7 @@ const CustomCalendar: React.FC = () => {
       <StyledCalendar
         onChange={handleDateChange}
         value={date}
+        calendarType="gregory"
         // カレンダーの各セルに、保存された入力値を表示（オプション）
         tileContent={({ date, view }) => {
           if (view === "month") {
@@ -198,7 +205,7 @@ const CustomCalendar: React.FC = () => {
             const entry = entries[dateKey];
             if (entry !== undefined) {
               return (
-                <div style={{ marginTop: "0.1rem", fontSize: "0.6em",  }}>
+                <div style={{ marginTop: "0.1rem", fontSize: "0.6em" }}>
                   <div>体重: {entry.weight} kg</div>
                   <div>睡眠: {entry.sleep} 時間</div>
                 </div>
