@@ -16,10 +16,10 @@ type Value = CalendarProps["value"];
 
 const StyledCalendar = styled(Calendar)`
   width: 100%;
-  max-width: 100%;
   border-radius: 8px;
   border: 1px solid #ccc;
-  position: relative;
+  background-color: #fff; /* 背景を白にしてグレーと分離 */
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1); /* 少し影で浮かせる */
 `;
 
 // モーダルのオーバーレイ（背景）
