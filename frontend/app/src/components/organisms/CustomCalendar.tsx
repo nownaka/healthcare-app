@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Calendar, { CalendarProps, CalendarType } from "react-calendar"; // ← CalendarType を追加
 import "react-calendar/dist/Calendar.css";
 import styled from "styled-components";
+import CharacterDisplay from "./CharacterDisplay";
+import {
+  evaluateWeightChange,
+  evaluateSleepTime,
+  getOverallEvaluation,
+  HealthEvaluation,
+} from "../../logic/HealthDataEvaluator";
 
 // type Value = CalendarProps["value"];
 type Value = CalendarProps["value"];
@@ -57,6 +64,47 @@ const CustomCalendar: React.FC = () => {
 
   // 各日付に入力された値を記録する（キーは ISO 形式の日付文字列）
   const [entries, setEntries] = useState<Record<string, Entry>>({});
+  
+  // キャラクター表示の状態管理
+  const [showCharacter, setShowCharacter] = useState<boolean>(false);
+  const [characterData, setCharacterData] = useState<HealthEvaluation | null>(null);
+
+  // 既存データを取得
+  useEffect(() => {
+    const fetchExistingData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/daily-records/", {
+          withCredentials: true,
+        });
+        
+        const existingEntries: Record<string, Entry> = {};
+        response.data.forEach((record: any) => {
+          const dateKey = record.recorded_at;
+          existingEntries[dateKey] = {
+            weight: record.weight,
+            sleep: record.sleep_time,
+          };
+        });
+        
+        setEntries(existingEntries);
+      } catch (err: any) {
+        console.error("既存データの取得に失敗しました:", err.response?.data || err.message);
+      }
+    };
+
+    fetchExistingData();
+  }, []);
+
+  // 前日の体重を取得する関数
+  const getPreviousWeight = (currentDateKey: string): number | null => {
+    const currentDate = new Date(currentDateKey);
+    const previousDate = new Date(currentDate);
+    previousDate.setDate(previousDate.getDate() - 1);
+    const previousDateKey = previousDate.toISOString().split("T")[0];
+    
+    const previousEntry = entries[previousDateKey];
+    return previousEntry ? previousEntry.weight : null;
+  };
 
   // 日付をクリックしたときの処理
   const handleDateChange: CalendarProps["onChange"] = (value, _event) => {
@@ -96,8 +144,33 @@ const CustomCalendar: React.FC = () => {
         record,
         { withCredentials: true }
       );
+
+      // 3) 健康データの評価を実行（更新されたentriesを使用）
+      const updatedEntries = {
+        ...entries,
+        [dateKey]: {
+          weight: record.weight,
+          sleep: record.sleep_time,
+        },
+      };
+      
+      const currentDate = new Date(dateKey);
+      const previousDate = new Date(currentDate);
+      previousDate.setDate(previousDate.getDate() - 1);
+      const previousDateKey = previousDate.toISOString().split("T")[0];
+      const previousWeight = updatedEntries[previousDateKey]?.weight || null;
+      
+      const weightEval = evaluateWeightChange(record.weight, previousWeight);
+      const sleepEval = evaluateSleepTime(record.sleep_time);
+      
+      // 総合評価を取得（カロリーデータは現在未実装のためnull）
+      const overallEval = getOverallEvaluation(weightEval, null, sleepEval);
+      
+      // 4) キャラクター表示を設定
+      setCharacterData(overallEval);
+      setShowCharacter(true);
   
-      // 3) フィールドをクリアしてモーダルを閉じる
+      // 5) フィールドをクリアしてモーダルを閉じる
       setWeight("");
       setSleepTime("");
       setShowModal(false);
@@ -167,6 +240,16 @@ const CustomCalendar: React.FC = () => {
             </div>
           </ModalContent>
         </ModalOverlay>
+      )}
+
+      {/* キャラクター表示 */}
+      {showCharacter && characterData && (
+        <CharacterDisplay
+          message={characterData.message}
+          imagePath={characterData.imagePath}
+          audioPath={characterData.audioPath}
+          onClose={() => setShowCharacter(false)}
+        />
       )}
     </div>
   );
