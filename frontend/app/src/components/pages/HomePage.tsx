@@ -106,7 +106,6 @@ const HomePage: React.FC = () => {
         <RightContainer>
           <Dashboard /> 
         </RightContainer>
-        <Dashboard /> 
       </HomeContainer>
 
       {isModalOpen && (

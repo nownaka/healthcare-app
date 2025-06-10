@@ -82,8 +82,14 @@ class LogoutView(APIView):
         response = Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')  # クッキーの削除
         response.delete_cookie('refresh_token')  # クッキーの削除
-        return response
 
+        
+        return response
+    
+    # プロフィールビューセット
+class UserProfileViewSet(viewsets.ModelViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
 
 # 体重履歴ビューセット
 class WeightRecordViewSet(viewsets.ModelViewSet):
