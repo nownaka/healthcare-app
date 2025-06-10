@@ -104,7 +104,7 @@ const HomePage: React.FC = () => {
         </LeftContainer>
 
         <RightContainer>
-          <Dashboard />
+          <Dashboard /> 
         </RightContainer>
       </HomeContainer>
 
