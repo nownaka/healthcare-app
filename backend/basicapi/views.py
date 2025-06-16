@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.backends import TokenBackend
 from django.conf import settings
 import datetime as _dt     # ★ これを追加
+from django_filters.rest_framework import DjangoFilterBackend
 
 # ログ設定
 logger = logging.getLogger(__name__)
@@ -81,10 +82,11 @@ class LogoutView(APIView):
         response = Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')  # クッキーの削除
         response.delete_cookie('refresh_token')  # クッキーの削除
+
+        
         return response
-
-
-# プロフィールビューセット
+    
+    # プロフィールビューセット
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
@@ -93,16 +95,22 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 class WeightRecordViewSet(viewsets.ModelViewSet):
     queryset = WeightRecord.objects.all()
     serializer_class = WeightRecordSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user']  # ← これで ?user=xxx が有効になる
 
 # カロリー記録ビューセット
 class CalorieRecordViewSet(viewsets.ModelViewSet):
     queryset = CalorieRecord.objects.all()
     serializer_class = CalorieRecordSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user']
 
 # 睡眠記録ビューセット
 class SleepRecordViewSet(viewsets.ModelViewSet):
     queryset = SleepRecord.objects.all()
     serializer_class = SleepRecordSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user']
 
 
 class AuthStatusView(APIView):
