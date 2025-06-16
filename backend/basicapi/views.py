@@ -219,7 +219,31 @@ class DailyRecordUpsertAPIView(APIView):
         except (TypeError, ValueError):
             return Response({"detail": "`sleep_time` は数値で指定してください"},
                             status=status.HTTP_400_BAD_REQUEST)
+                            
+        calories = data.get("calories")
+        exercise = data.get("exercise")
 
+        if calories is None and exercise is None:
+            return Response(
+                {"detail": "`calories` か `exercise` のどちらかは必要です"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            calories = float(calories) if calories is not None else None
+        except (TypeError, ValueError):
+            return Response(
+                {"detail": "`calories` は数値で指定してください"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            exercise = float(exercise) if exercise is not None else None
+        except (TypeError, ValueError):
+            return Response(
+                {"detail": "`exercise` は数値で指定してください"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         # ────────────────────────────────────────────────
         # 3. Upsert
         # ────────────────────────────────────────────────
@@ -243,6 +267,27 @@ class DailyRecordUpsertAPIView(APIView):
             )
             created_any |= created
             result["sleep_record"] = SleepRecordSerializer(sleep_obj).data
+
+        result  = {}
+        created_any = False
+
+        if weight is not None:
+            weight_obj, created = caloriesRecord.objects.update_or_create(
+                user=user,
+                recorded_at=recorded_at,
+                defaults={"calories": calories},
+            )
+            created_any |= created
+            result["calories_record"] = caloriesRecordSerializer(calories_obj).data
+
+        if sleep is not None:
+            sleep_obj, created = exerciseRecord.objects.update_or_create(
+                user=user,
+                recorded_at=recorded_at,
+                defaults={"exercise": exercise},
+            )
+            created_any |= created
+            result["exercise"] = exerciseRecordSerializer(exercise_obj).data
 
         # ────────────────────────────────────────────────
         # 4. 応答
