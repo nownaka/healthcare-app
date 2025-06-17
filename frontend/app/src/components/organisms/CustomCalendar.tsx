@@ -17,6 +17,8 @@ type Value = CalendarProps["value"];
 type Entry = {
   weight: number;
   sleep: number;
+  calories: number;
+  exercise: number;
 };
 
 type CustomCalendarProps = {
@@ -61,6 +63,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
           existingEntries[dateKey] = {
             weight: record.weight,
             sleep: record.sleep_time,
+            calories: record.weight,
+            exercise: record.sleep_time,
           };
         });
 
@@ -104,6 +108,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
       recorded_at: dateKey,
       weight: Number(weight),
       sleep_time: Number(sleepTime),
+      calories: Number(calories),
+      exercise: Number(exercise),
     };
 
     try {
@@ -112,6 +118,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
         [dateKey]: {
           weight: record.weight,
           sleep: record.sleep_time,
+          calories: record.weight,
+          exercise: record.sleep_time,
         },
       }));
 
@@ -124,6 +132,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
         [dateKey]: {
           weight: record.weight,
           sleep: record.sleep_time,
+          calories: record.weight,
+          exercise: record.sleep_time,
         },
       };
 
