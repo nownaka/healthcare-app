@@ -36,27 +36,6 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // モーダル関連のステート
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [weight, setWeight] = useState<string>("");
-  const [sleep, setSleep] = useState<string>("");
-  const [calories, setCalories] = useState<string>("");
-  const [exercise, setExercise] = useState<string>("");
-
-  const openModal = (date: Date) => {
-    setSelectedDate(date.toLocaleDateString());
-    setIsModalOpen(true);
-  };
-
-  const handleSave = () => {
-    // 保存処理を書く（必要であれば）
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -100,7 +79,7 @@ const HomePage: React.FC = () => {
       <HomeContainer>
         <LeftContainer>
           <h3>カレンダー</h3>
-          <CustomCalendar onDateClick={openModal} />
+          <CustomCalendar />
         </LeftContainer>
 
         <RightContainer>
@@ -108,21 +87,6 @@ const HomePage: React.FC = () => {
         </RightContainer>
       </HomeContainer>
 
-      {isModalOpen && (
-        <Modal
-          dateLabel={selectedDate}
-          weight={weight}
-          sleep={sleep}
-          calories={calories}
-          exercise={exercise}
-          setWeight={setWeight}
-          setSleep={setSleep}
-          setCalories={setCalories}
-          setExercise={setExercise}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
-      )}
     </>
   );
 };
