@@ -80,14 +80,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
     fetchExistingData();
   }, []);
 
-  const getPreviousWeight = (currentDateKey: string): number | null => {
-    const currentDate = new Date(currentDateKey);
-    const previousDate = new Date(currentDate);
-    previousDate.setDate(previousDate.getDate() - 1);
-    const previousDateKey = previousDate.toISOString().split("T")[0];
-    const previousEntry = entries[previousDateKey];
-    return previousEntry ? previousEntry.weight : null;
-  };
 
   const handleDateChange: CalendarProps["onChange"] = (value, _event) => {
     const newDate = value as Date;
