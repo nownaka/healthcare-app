@@ -214,3 +214,4 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacte
 };
 
 export default CustomCalendar;
+

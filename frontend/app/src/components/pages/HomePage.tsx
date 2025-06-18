@@ -85,7 +85,7 @@ const HomePage: React.FC = () => {
     <LeftContainer>
       <h3>カレンダー</h3>
       <CustomCalendar
-        onCharacterTrigger={(data) => {
+        onCharacterTrigger={(data: HealthEvaluation) => {
           setCharacterData(data);
           setPlayKey((prev) => prev + 1);
           setShowCharacter(true);
