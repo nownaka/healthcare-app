@@ -3,7 +3,7 @@ import axios from "axios";
 import Calendar, { CalendarProps } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import styled from "styled-components";
-import CharacterDisplay from "./CharacterDisplay";
+import CharacterDisplay from "../molecules/CharacterDisplay";
 import RecordModal from "./Modal";
 import {
   evaluateWeightChange,
@@ -161,6 +161,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
   };
 
   return (
+    <>
     <div>
       <StyledCalendar
         onChange={handleDateChange}
@@ -202,7 +203,19 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
           onCharacterClose={() => setShowCharacter(false)}
         />
       )}
+      
     </div>
+    
+    {/* モーダル外でキャラクターを表示 */}
+    {showCharacter && characterData && (
+      <CharacterDisplay
+        message={characterData.message}
+        imagePath={characterData.imagePath}
+        audioPath={characterData.audioPath}
+        onClose={() => setShowCharacter(false)}
+      />
+    )}
+    </>
   );
 };
 

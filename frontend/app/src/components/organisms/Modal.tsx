@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import CharacterDisplay from "./CharacterDisplay"; // ← 追加
+import CharacterDisplay from "../molecules/CharacterDisplay"; // ← 追加
 
 const Overlay = styled.div`
   position: fixed;

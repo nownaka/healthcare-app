@@ -5,7 +5,6 @@ import CustomCalendar from "../organisms/CustomCalendar";
 import styled from "styled-components";
 import axios from "axios";
 import Dashboard from "../organisms/Dashboard";
-import Modal from "../organisms/Modal";
 
 const HomeContainer = styled.div`
   display: flex;
