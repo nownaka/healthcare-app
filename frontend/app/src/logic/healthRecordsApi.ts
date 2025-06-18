@@ -45,6 +45,7 @@ export interface DailyHealthData {
   weight?: number;
   calories?: number;
   sleep?: number;
+  exercise?: number;
 }
 
 // 体重記録を取得
@@ -100,14 +101,19 @@ export const getAllHealthRecords = async (): Promise<Record<string, DailyHealthD
       dailyData[date].weight = record.weight;
     });
 
-    // カロリー記録を処理（正のカロリーのみ）
+    // カロリー記録を処理（正のカロリーと負のカロリー（運動）を分けて処理）
     calorieRecords.forEach((record) => {
+      const date = record.recorded_at;
+      if (!dailyData[date]) {
+        dailyData[date] = { date };
+      }
+      
       if (record.calorie > 0) {
-        const date = record.recorded_at;
-        if (!dailyData[date]) {
-          dailyData[date] = { date };
-        }
+        // 正のカロリー（摂取カロリー）
         dailyData[date].calories = (dailyData[date].calories || 0) + record.calorie;
+      } else if (record.calorie < 0) {
+        // 負のカロリー（運動による消費カロリー）
+        dailyData[date].exercise = (dailyData[date].exercise || 0) + Math.abs(record.calorie);
       }
     });
 

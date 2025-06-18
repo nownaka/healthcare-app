@@ -11,14 +11,15 @@ import {
   getOverallEvaluation,
   HealthEvaluation,
 } from "../../logic/HealthDataEvaluator";
+import { getAllHealthRecords, DailyHealthData } from "../../logic/healthRecordsApi";
 
 type Value = CalendarProps["value"];
 
 type Entry = {
-  weight: number;
-  sleep: number;
-  calories: number;
-  exercise: number;
+  weight?: number;
+  sleep?: number;
+  calories?: number;
+  exercise?: number;
 };
 
 type CustomCalendarProps = {
@@ -43,29 +44,20 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacte
   const [calories, setCalories] = useState<string>("");
   const [exercise, setExercise] = useState<string>("");
   const [entries, setEntries] = useState<Record<string, Entry>>({});
-  const [showCharacter, setShowCharacter] = useState<boolean>(false);
-  const [characterData, setCharacterData] = useState<HealthEvaluation | null>(
-    null
-  );
 
   useEffect(() => {
     const fetchExistingData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/daily-records/",
-          {
-            withCredentials: true,
-          }
-        );
-
+        const healthRecords = await getAllHealthRecords();
+        
         const existingEntries: Record<string, Entry> = {};
-        response.data.forEach((record: any) => {
-          const dateKey = record.recorded_at;
+        Object.keys(healthRecords).forEach((dateKey) => {
+          const record = healthRecords[dateKey];
           existingEntries[dateKey] = {
             weight: record.weight,
-            sleep: record.sleep_time,
-            calories: record.weight,
-            exercise: record.sleep_time,
+            sleep: record.sleep,
+            calories: record.calories,
+            exercise: record.exercise,
           };
         });
 
@@ -107,29 +99,39 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacte
     };
 
     try {
+      // 先にローカル状態を更新
+      const newEntry = {
+        weight: record.weight,
+        sleep: record.sleep_time,
+        calories: record.calories,
+        exercise: record.exercise,
+      };
+
       setEntries((prev) => ({
         ...prev,
-        [dateKey]: {
-          weight: record.weight,
-          sleep: record.sleep_time,
-          calories: record.weight,
-          exercise: record.sleep_time,
-        },
+        [dateKey]: newEntry,
       }));
 
+      // バックエンドに保存
       await axios.post("http://localhost:8000/api/daily-records/", record, {
         withCredentials: true,
       });
 
-      const updatedEntries = {
-        ...entries,
-        [dateKey]: {
+      // データを再取得してカレンダーを更新
+      const healthRecords = await getAllHealthRecords();
+      const existingEntries: Record<string, Entry> = {};
+      Object.keys(healthRecords).forEach((dateKey) => {
+        const record = healthRecords[dateKey];
+        existingEntries[dateKey] = {
           weight: record.weight,
-          sleep: record.sleep_time,
-          calories: record.weight,
-          exercise: record.sleep_time,
-        },
-      };
+          sleep: record.sleep,
+          calories: record.calories,
+          exercise: record.exercise,
+        };
+      });
+      setEntries(existingEntries);
+
+      const updatedEntries = existingEntries;
 
       const currentDate = new Date(dateKey);
       const previousDate = new Date(currentDate);
@@ -143,9 +145,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacte
 
       // ✅ キャラクター再生トリガーを呼び出す
       onCharacterTrigger(overallEval);
-
-      setCharacterData(overallEval);
-      setShowCharacter(true);
       setWeight("");
       setSleepTime("");
       setCalories("");
@@ -176,11 +175,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacte
           if (view === "month") {
             const dateKey = date.toISOString().split("T")[0];
             const entry = entries[dateKey];
-            if (entry !== undefined) {
+            if (entry && (entry.weight || entry.sleep || entry.calories || entry.exercise)) {
               return (
-                <div style={{ marginTop: "0.1rem", fontSize: "0.6em" }}>
-                  <div>体重: {entry.weight} kg</div>
-                  <div>睡眠: {entry.sleep} 時間</div>
+                <div style={{ marginTop: "0.1rem", fontSize: "0.6em", lineHeight: "1.1" }}>
+                  {entry.weight && <div>体重: {entry.weight}kg</div>}
+                  {entry.sleep && <div>睡眠: {entry.sleep}h</div>}
+                  {entry.calories && <div>カロリー: {entry.calories}</div>}
+                  {entry.exercise && <div>運動: {entry.exercise}</div>}
                 </div>
               );
             }
