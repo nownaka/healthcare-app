@@ -272,22 +272,14 @@ class DailyRecordUpsertAPIView(APIView):
         created_any = False
 
         if weight is not None:
-            weight_obj, created = caloriesRecord.objects.update_or_create(
+            weight_obj, created = CalorieRecord.objects.update_or_create(
                 user=user,
                 recorded_at=recorded_at,
                 defaults={"calories": calories},
             )
             created_any |= created
-            result["calories_record"] = caloriesRecordSerializer(calories_obj).data
+            result["calories_record"] = CalorieRecordSerializer(calories_obj).data
 
-        if sleep is not None:
-            sleep_obj, created = exerciseRecord.objects.update_or_create(
-                user=user,
-                recorded_at=recorded_at,
-                defaults={"exercise": exercise},
-            )
-            created_any |= created
-            result["exercise"] = exerciseRecordSerializer(exercise_obj).data
 
         # ────────────────────────────────────────────────
         # 4. 応答
