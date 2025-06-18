@@ -23,6 +23,7 @@ type Entry = {
 
 type CustomCalendarProps = {
   onDateClick?: (date: Date) => void;
+  onCharacterTrigger: (data: HealthEvaluation) => void;
 };
 
 const StyledCalendar = styled(Calendar)`
@@ -33,7 +34,7 @@ const StyledCalendar = styled(Calendar)`
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 `;
 
-const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
+const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacterTrigger }) => {
   const [date, setDate] = useState<Value>(new Date());
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -83,6 +84,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
 
   const handleDateChange: CalendarProps["onChange"] = (value, _event) => {
     const newDate = value as Date;
+    
     setDate(newDate);
     setSelectedDate(newDate);
     setShowModal(true);
@@ -138,6 +140,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
       const weightEval = evaluateWeightChange(record.weight, previousWeight);
       const sleepEval = evaluateSleepTime(record.sleep_time);
       const overallEval = getOverallEvaluation(weightEval, null, sleepEval);
+
+      // ✅ キャラクター再生トリガーを呼び出す
+      onCharacterTrigger(overallEval);
 
       setCharacterData(overallEval);
       setShowCharacter(true);
@@ -198,23 +203,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
           setExercise={setExercise}
           onSave={handleSave}
           onCancel={handleCancel}
-          showCharacter={showCharacter}
-          characterData={characterData}
-          onCharacterClose={() => setShowCharacter(false)}
         />
       )}
       
     </div>
-    
-    {/* モーダル外でキャラクターを表示 */}
-    {showCharacter && characterData && (
-      <CharacterDisplay
-        message={characterData.message}
-        imagePath={characterData.imagePath}
-        audioPath={characterData.audioPath}
-        onClose={() => setShowCharacter(false)}
-      />
-    )}
+
     </>
   );
 };

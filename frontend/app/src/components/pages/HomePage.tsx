@@ -5,6 +5,10 @@ import CustomCalendar from "../organisms/CustomCalendar";
 import styled from "styled-components";
 import axios from "axios";
 import Dashboard from "../organisms/Dashboard";
+import CharacterDisplay from "../molecules/CharacterDisplay";
+import {
+  HealthEvaluation,
+} from "../../logic/HealthDataEvaluator";
 
 const HomeContainer = styled.div`
   display: flex;
@@ -34,6 +38,9 @@ const HomePage: React.FC = () => {
   const [userName, setUserName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [characterData, setCharacterData] = useState<HealthEvaluation | null>(null);
+  const [showCharacter, setShowCharacter] = useState(false);
+  const [playKey, setPlayKey] = useState(0); // audioPathが同じでも強制再再生
 
 
   useEffect(() => {
@@ -71,22 +78,37 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <>
-      {/* ✅ ヘッダー管理は HeaderContainer に移行 */}
-      <Header title="健康管理アプリ" userName={userName} textColor="white" />
+<>
+  <Header title="健康管理アプリ" userName={userName} textColor="white" />
 
-      <HomeContainer>
-        <LeftContainer>
-          <h3>カレンダー</h3>
-          <CustomCalendar />
-        </LeftContainer>
+  <HomeContainer>
+    <LeftContainer>
+      <h3>カレンダー</h3>
+      <CustomCalendar
+        onCharacterTrigger={(data) => {
+          setCharacterData(data);
+          setPlayKey((prev) => prev + 1);
+          setShowCharacter(true);
+        }}
+      />
+    </LeftContainer>
 
-        <RightContainer>
-          <Dashboard /> 
-        </RightContainer>
-      </HomeContainer>
+    <RightContainer>
+      <Dashboard />
+    </RightContainer>
+  </HomeContainer>
 
-    </>
+  {/* キャラ表示：モーダルとは独立 */}
+  {showCharacter && characterData && (
+    <CharacterDisplay
+      key={playKey}
+      message={characterData.message}
+      imagePath={characterData.imagePath}
+      audioPath={characterData.audioPath}
+      onClose={() => setShowCharacter(false)}
+    />
+  )}
+</>
   );
 };
 
