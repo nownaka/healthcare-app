@@ -271,15 +271,29 @@ class DailyRecordUpsertAPIView(APIView):
         result  = {}
         created_any = False
 
-        if weight is not None:
-            weight_obj, created = CalorieRecord.objects.update_or_create(
+        if calories is not None:
+            calories_obj, created = CalorieRecord.objects.update_or_create(
                 user=user,
                 recorded_at=recorded_at,
-                defaults={"calories": calories},
+                category='honyahonya',  # 検索条件に含める
+                defaults={
+                    "calorie": float(calories),
+                }
             )
             created_any |= created
             result["calories_record"] = CalorieRecordSerializer(calories_obj).data
 
+        if exercise is not None:
+            exercise_obj, created = CalorieRecord.objects.update_or_create(
+                user=user,
+                recorded_at=recorded_at,
+                category='exercise',  # 検索条件に含める
+                defaults={
+                    "calorie": -abs(float(exercise)),
+                }
+            )
+        created_any = True
+        result["exercise_record"] = CalorieRecordSerializer(exercise_obj).data
 
         # ────────────────────────────────────────────────
         # 4. 応答
