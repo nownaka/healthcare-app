@@ -33,8 +33,13 @@ param containerAppNames string[] = [
   join(split(join(concat(['ca', appName, 'front'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
   join(split(join(concat(['ca', appName, 'back'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
   join(split(join(concat(['ca', appName, 'db'], empty(environment) ? [] : [environment], empty(suffix) ? [timestamp] : [suffix]), '-'), '-'), '-')
-
 ]
+@description('Container environment variables.')
+param containersEnvironmentVar {
+  name: string
+  secretRef: string?
+  value: string
+}[][]
 
 @description('Role definition to assign.')
 param roleDefinitions { name: string, id: string }[] = [
@@ -156,6 +161,7 @@ var _containerAppsConfigs = [for (name, index) in containerAppNames: {
         image: 'mcr.microsoft.com/k8se/quickstart:latest'  
         command: []
         args: []
+        env: containersEnvironmentVar[index]
         resources: {
             cpu: '0.25'
             memory: '.5Gi'
