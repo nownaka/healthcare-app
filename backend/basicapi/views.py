@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.backends import TokenBackend
 from django.conf import settings
 import datetime as _dt     # ★ これを追加
+from django_filters.rest_framework import DjangoFilterBackend
 
 # ログ設定
 logger = logging.getLogger(__name__)
@@ -103,10 +104,11 @@ class LogoutView(APIView):
         response = Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')  # クッキーの削除
         response.delete_cookie('refresh_token')  # クッキーの削除
+
+        
         return response
-
-
-# プロフィールビューセット
+    
+    # プロフィールビューセット
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
@@ -117,16 +119,22 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 class WeightRecordViewSet(viewsets.ModelViewSet):
     queryset = WeightRecord.objects.all()
     serializer_class = WeightRecordSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user']  # ← これで ?user=xxx が有効になる
 
 # カロリー記録ビューセット
 class CalorieRecordViewSet(viewsets.ModelViewSet):
     queryset = CalorieRecord.objects.all()
     serializer_class = CalorieRecordSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user']
 
 # 睡眠記録ビューセット
 class SleepRecordViewSet(viewsets.ModelViewSet):
     queryset = SleepRecord.objects.all()
     serializer_class = SleepRecordSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user']
 
 
 class AuthStatusView(APIView):
@@ -234,7 +242,31 @@ class DailyRecordUpsertAPIView(APIView):
         except (TypeError, ValueError):
             return Response({"detail": "`sleep_time` は数値で指定してください"},
                             status=status.HTTP_400_BAD_REQUEST)
+                            
+        calories = data.get("calories")
+        exercise = data.get("exercise")
 
+        if calories is None and exercise is None:
+            return Response(
+                {"detail": "`calories` か `exercise` のどちらかは必要です"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            calories = float(calories) if calories is not None else None
+        except (TypeError, ValueError):
+            return Response(
+                {"detail": "`calories` は数値で指定してください"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            exercise = float(exercise) if exercise is not None else None
+        except (TypeError, ValueError):
+            return Response(
+                {"detail": "`exercise` は数値で指定してください"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         # ────────────────────────────────────────────────
         # 3. Upsert
         # ────────────────────────────────────────────────
@@ -258,6 +290,33 @@ class DailyRecordUpsertAPIView(APIView):
             )
             created_any |= created
             result["sleep_record"] = SleepRecordSerializer(sleep_obj).data
+
+        result  = {}
+        created_any = False
+
+        if calories is not None:
+            calories_obj, created = CalorieRecord.objects.update_or_create(
+                user=user,
+                recorded_at=recorded_at,
+                category='honyahonya',  # 検索条件に含める
+                defaults={
+                    "calorie": float(calories),
+                }
+            )
+            created_any |= created
+            result["calories_record"] = CalorieRecordSerializer(calories_obj).data
+
+        if exercise is not None:
+            exercise_obj, created = CalorieRecord.objects.update_or_create(
+                user=user,
+                recorded_at=recorded_at,
+                category='exercise',  # 検索条件に含める
+                defaults={
+                    "calorie": -abs(float(exercise)),
+                }
+            )
+        created_any = True
+        result["exercise_record"] = CalorieRecordSerializer(exercise_obj).data
 
         # ────────────────────────────────────────────────
         # 4. 応答
