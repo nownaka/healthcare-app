@@ -111,17 +111,14 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
   audioPath,
   onClose,
 }) => {
-  const [audio] = useState(new Audio(audioPath));
-
   useEffect(() => {
-    // 音声を再生
+    const audio = new Audio(audioPath);
+
     audio.play().catch((error) => {
       console.error("音声の再生に失敗しました:", error);
     });
 
-    // 音声終了時の処理
     const handleAudioEnd = () => {
-      // 音声終了後、5秒後に自動で閉じる
       setTimeout(() => {
         onClose();
       }, 5000);
@@ -129,13 +126,12 @@ const CharacterDisplay: React.FC<CharacterDisplayProps> = ({
 
     audio.addEventListener("ended", handleAudioEnd);
 
-    // クリーンアップ
     return () => {
       audio.removeEventListener("ended", handleAudioEnd);
       audio.pause();
       audio.currentTime = 0;
     };
-  }, [audio, onClose]);
+  }, [audioPath, onClose]); // ← audioPath が変わった時のみ再生
 
   return (
     <CharacterContainer>

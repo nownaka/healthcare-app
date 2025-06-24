@@ -3,7 +3,7 @@ import axios from "axios";
 import Calendar, { CalendarProps } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import styled from "styled-components";
-import CharacterDisplay from "./CharacterDisplay";
+import CharacterDisplay from "../molecules/CharacterDisplay";
 import RecordModal from "./Modal";
 import {
   evaluateWeightChange,
@@ -11,18 +11,20 @@ import {
   getOverallEvaluation,
   HealthEvaluation,
 } from "../../logic/HealthDataEvaluator";
+import { getAllHealthRecords, DailyHealthData } from "../../logic/healthRecordsApi";
 
 type Value = CalendarProps["value"];
 
 type Entry = {
-  weight: number;
-  sleep: number;
-  calories: number;
-  exercise: number;
+  weight?: number;
+  sleep?: number;
+  calories?: number;
+  exercise?: number;
 };
 
 type CustomCalendarProps = {
   onDateClick?: (date: Date) => void;
+  onCharacterTrigger: (data: HealthEvaluation) => void;
 };
 
 const StyledCalendar = styled(Calendar)`
@@ -33,7 +35,7 @@ const StyledCalendar = styled(Calendar)`
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 `;
 
-const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
+const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacterTrigger }) => {
   const [date, setDate] = useState<Value>(new Date());
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -42,29 +44,20 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
   const [calories, setCalories] = useState<string>("");
   const [exercise, setExercise] = useState<string>("");
   const [entries, setEntries] = useState<Record<string, Entry>>({});
-  const [showCharacter, setShowCharacter] = useState<boolean>(false);
-  const [characterData, setCharacterData] = useState<HealthEvaluation | null>(
-    null
-  );
 
   useEffect(() => {
     const fetchExistingData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/daily-records/",
-          {
-            withCredentials: true,
-          }
-        );
-
+        const healthRecords = await getAllHealthRecords();
+        
         const existingEntries: Record<string, Entry> = {};
-        response.data.forEach((record: any) => {
-          const dateKey = record.recorded_at;
+        Object.keys(healthRecords).forEach((dateKey) => {
+          const record = healthRecords[dateKey];
           existingEntries[dateKey] = {
             weight: record.weight,
-            sleep: record.sleep_time,
-            calories: record.weight,
-            exercise: record.sleep_time,
+            sleep: record.sleep,
+            calories: record.calories,
+            exercise: record.exercise,
           };
         });
 
@@ -80,17 +73,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
     fetchExistingData();
   }, []);
 
-  const getPreviousWeight = (currentDateKey: string): number | null => {
-    const currentDate = new Date(currentDateKey);
-    const previousDate = new Date(currentDate);
-    previousDate.setDate(previousDate.getDate() - 1);
-    const previousDateKey = previousDate.toISOString().split("T")[0];
-    const previousEntry = entries[previousDateKey];
-    return previousEntry ? previousEntry.weight : null;
-  };
 
   const handleDateChange: CalendarProps["onChange"] = (value, _event) => {
     const newDate = value as Date;
+    
     setDate(newDate);
     setSelectedDate(newDate);
     setShowModal(true);
@@ -113,29 +99,39 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
     };
 
     try {
+      // 先にローカル状態を更新
+      const newEntry = {
+        weight: record.weight,
+        sleep: record.sleep_time,
+        calories: record.calories,
+        exercise: record.exercise,
+      };
+
       setEntries((prev) => ({
         ...prev,
-        [dateKey]: {
-          weight: record.weight,
-          sleep: record.sleep_time,
-          calories: record.weight,
-          exercise: record.sleep_time,
-        },
+        [dateKey]: newEntry,
       }));
 
+      // バックエンドに保存
       await axios.post("http://localhost:8000/api/daily-records/", record, {
         withCredentials: true,
       });
 
-      const updatedEntries = {
-        ...entries,
-        [dateKey]: {
+      // データを再取得してカレンダーを更新
+      const healthRecords = await getAllHealthRecords();
+      const existingEntries: Record<string, Entry> = {};
+      Object.keys(healthRecords).forEach((dateKey) => {
+        const record = healthRecords[dateKey];
+        existingEntries[dateKey] = {
           weight: record.weight,
-          sleep: record.sleep_time,
-          calories: record.weight,
-          exercise: record.sleep_time,
-        },
-      };
+          sleep: record.sleep,
+          calories: record.calories,
+          exercise: record.exercise,
+        };
+      });
+      setEntries(existingEntries);
+
+      const updatedEntries = existingEntries;
 
       const currentDate = new Date(dateKey);
       const previousDate = new Date(currentDate);
@@ -147,8 +143,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
       const sleepEval = evaluateSleepTime(record.sleep_time);
       const overallEval = getOverallEvaluation(weightEval, null, sleepEval);
 
-      setCharacterData(overallEval);
-      setShowCharacter(true);
+      // ✅ キャラクター再生トリガーを呼び出す
+      onCharacterTrigger(overallEval);
       setWeight("");
       setSleepTime("");
       setCalories("");
@@ -169,6 +165,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
   };
 
   return (
+    <>
     <div>
       <StyledCalendar
         onChange={handleDateChange}
@@ -178,11 +175,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
           if (view === "month") {
             const dateKey = date.toISOString().split("T")[0];
             const entry = entries[dateKey];
-            if (entry !== undefined) {
+            if (entry && (entry.weight || entry.sleep || entry.calories || entry.exercise)) {
               return (
-                <div style={{ marginTop: "0.1rem", fontSize: "0.6em" }}>
-                  <div>体重: {entry.weight} kg</div>
-                  <div>睡眠: {entry.sleep} 時間</div>
+                <div style={{ marginTop: "0.1rem", fontSize: "0.6em", lineHeight: "1.1" }}>
+                  {entry.weight && <div>体重: {entry.weight}kg</div>}
+                  {entry.sleep && <div>睡眠: {entry.sleep}h</div>}
+                  {entry.calories && <div>カロリー: {entry.calories}</div>}
+                  {entry.exercise && <div>運動: {entry.exercise}</div>}
                 </div>
               );
             }
@@ -205,13 +204,14 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick }) => {
           setExercise={setExercise}
           onSave={handleSave}
           onCancel={handleCancel}
-          showCharacter={showCharacter}
-          characterData={characterData}
-          onCharacterClose={() => setShowCharacter(false)}
         />
       )}
+      
     </div>
+
+    </>
   );
 };
 
 export default CustomCalendar;
+

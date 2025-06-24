@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import CharacterDisplay from "./CharacterDisplay"; // ← 追加
+import CharacterDisplay from "../molecules/CharacterDisplay"; // ← 追加
 
 const Overlay = styled.div`
   position: fixed;
@@ -81,15 +81,6 @@ type Props = {
   setExercise: (val: string) => void;
   onSave: () => void;
   onCancel: () => void;
-
-  // 🔽 キャラクター表示用の追加 props
-  showCharacter?: boolean;
-  characterData?: {
-    message: string;
-    imagePath: string;
-    audioPath: string;
-  } | null;
-  onCharacterClose?: () => void;
 };
 
 const RecordModal: React.FC<Props> = ({
@@ -104,9 +95,6 @@ const RecordModal: React.FC<Props> = ({
   setExercise,
   onSave,
   onCancel,
-  showCharacter,
-  characterData,
-  onCharacterClose,
 }) => {
   return (
     <Overlay>
@@ -154,16 +142,6 @@ const RecordModal: React.FC<Props> = ({
           <button onClick={onCancel}>キャンセル</button>
         </ButtonGroup>
       </ModalBox>
-
-      {/* 🔽 キャラクター表示（表示条件と props チェック） */}
-      {showCharacter && characterData && onCharacterClose && (
-        <CharacterDisplay
-          message={characterData.message}
-          imagePath={characterData.imagePath}
-          audioPath={characterData.audioPath}
-          onClose={onCharacterClose}
-        />
-      )}
     </Overlay>
   );
 };
