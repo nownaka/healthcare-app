@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-// import HeaderContainer from "../organisms/HeaderContainer";
 import Header from "../organisms/Header";
 import CustomCalendar from "../organisms/CustomCalendar";
 import styled from "styled-components";
-import axios from "axios";
 import Dashboard from "../organisms/Dashboard";
+import { useFetchUser } from "../organisms/useFetchUser";
 import CharacterDisplay from "../molecules/CharacterDisplay";
 import {
   HealthEvaluation,
@@ -31,55 +30,15 @@ const RightContainer = styled.div`
 `;
 
 const HomePage: React.FC = () => {
-  const [userInfo, setUserInfo] = useState<{
-    user_id: number;
-    message: string;
-  } | null>(null);
-  const [userName, setUserName] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { user_id, email, name } = useFetchUser();
   const [characterData, setCharacterData] = useState<HealthEvaluation | null>(null);
   const [showCharacter, setShowCharacter] = useState(false);
   const [playKey, setPlayKey] = useState(0); // audioPathが同じでも強制再再生
 
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      setLoading(true);
-      try {
-        const { data: basic } = await axios.get(
-          "http://localhost:8000/api/userinfo/",
-          {
-            withCredentials: true,
-            headers: { Accept: "application/json" },
-          }
-        );
-        const userId = basic.user_id;
-        localStorage.setItem("user_id", userId);
-
-        // ユーザー詳細 API 呼び出し
-        const { data: detail } = await axios.get(
-          `http://localhost:8000/api/user-profiles/${userId}/`,
-          {
-            withCredentials: true,
-            headers: { Accept: "application/json" },
-          }
-        );
-        setUserName(detail.name);
-      } catch (err: any) {
-        console.error(err.response?.data || err.message);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
   return (
-<>
-  <Header title="健康管理アプリ" userName={userName} textColor="white" />
+    <>
+      {/* ✅ ヘッダー管理は HeaderContainer に移行 */}
+      <Header title="健康管理アプリ" userName={name} textColor="white" />
 
   <HomeContainer>
     <LeftContainer>

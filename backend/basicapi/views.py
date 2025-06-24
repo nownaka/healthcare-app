@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status,viewsets
 from rest_framework_simplejwt.views import TokenRefreshView as BaseTokenRefreshView
 from rest_framework_simplejwt.views import TokenObtainPairView as BaseTokenObtainPairView
-from .models import UserProfile, WeightRecord, CalorieRecord, SleepRecord
-from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer, UserProfileSerializer, WeightRecordSerializer, CalorieRecordSerializer, SleepRecordSerializer
+from .models import UserProfile, WeightRecord, CalorieRecord, SleepRecord, CustomUser
+from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer, UserProfileSerializer, WeightRecordSerializer, CalorieRecordSerializer, SleepRecordSerializer, CustomUserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -37,7 +37,30 @@ class RegisterView(APIView):
         # エラー内容をログに記録
         logger.warning(f"Validation failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# costomUserviewset
+class CustomUserViewSet(viewsets.ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated]
 
+    def partial_update(self, request, *args, **kwargs):
+        response = super().partial_update(request, *args, **kwargs)
+
+        # パスワード・メール更新後に新トークン発行
+        user = self.get_object()
+        refresh = RefreshToken.for_user(user)
+        access  = refresh.access_token
+
+        res = Response(response.data, status=status.HTTP_200_OK)
+        res.set_cookie(
+            "access", str(access),
+            httponly=True, samesite="None", secure=False,
+        )
+        res.set_cookie(
+            "refresh", str(refresh),
+            httponly=True, samesite="None", secure=False,
+        )
+        return res
 # JWT トークン発行ビュー
 class CustomTokenObtainPairView(BaseTokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -74,9 +97,8 @@ class CustomTokenObtainPairView(BaseTokenObtainPairView):
             # samesite='Lax',
             max_age=86400            # 例として24時間有効
         )
-
         return response
-    #ログアウト 
+#ログアウト 
 class LogoutView(APIView):
     def post(self, request):
         response = Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)
@@ -90,6 +112,8 @@ class LogoutView(APIView):
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    lookup_field = "user_id"
+    lookup_url_kwarg = "user_id"      # URL <int:user_id> と対応させる
 
 # 体重履歴ビューセット
 class WeightRecordViewSet(viewsets.ModelViewSet):
@@ -157,7 +181,6 @@ class CookieUserInfoView(APIView):
         if not access_token:
             return Response({"error": "Access token not found."},
                             status=status.HTTP_400_BAD_REQUEST)
-        
         try:
             # SimpleJWT の TokenBackend を使ってトークンの検証・デコード
             token_backend = TokenBackend(
@@ -168,14 +191,14 @@ class CookieUserInfoView(APIView):
         except Exception as e:
             return Response({"error": "Invalid token", "details": str(e)},
                             status=status.HTTP_401_UNAUTHORIZED)
-        
+
         # ペイロードからユーザーIDを取得（ログイン時にトークンに含めた情報）
-        user_id = token_data.get('user_id')
+        user_id = token_data.get("user_id")
+        email   = token_data.get("email")
         if not user_id:
             return Response({"error": "User ID not found in token."},
                             status=status.HTTP_401_UNAUTHORIZED)
-        
-        return Response({"user_id": user_id, "message": "Token is valid. User authenticated."},
+        return Response({"user_id": user_id, "email": email, "message": "Token is valid. User authenticated."},
                         status=status.HTTP_200_OK)
 
 class DailyRecordUpsertAPIView(APIView):

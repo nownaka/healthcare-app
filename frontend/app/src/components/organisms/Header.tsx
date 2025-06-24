@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import SettingImage from "./setting.svg";
-import IconButton from "../molecules/IconButton";
 import { logout } from "../../logic/Logout";
 import DropdownMenu from "../molecules/DropdownMenu";
 
@@ -27,42 +26,19 @@ const Header: React.FC<HeaderProps> = ({
     setIsMenuOpen(!isMenuOpen);
     if (onMenuClick) onMenuClick("menu"); // ✅ 外部からメニュー開閉を制御可能に
   };
-  
-  const handleLogout = async () => {
-    try {
-      // ログアウト関数を呼び出し（await を使用）
-      const success = await logout();
-  
-      if (success) {
-        // メニューを閉じる
-        setIsMenuOpen(false);
-        
-        // ログインページにリダイレクト
-        navigate("/");
-      }
-      
-      // 親コンポーネントにログアウトイベントを通知
-      if (onMenuClick) onMenuClick("logout");
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert("ログアウト処理中にエラーが発生しました。");
-    }
-    // 操作後はメニューを閉じる
-    setIsMenuOpen(false);
-  };
-    
+
   const handleMenuAction = async (action: string) => {
     switch (action) {
       case "/home":
-        navigate("/home");
+        navigate(action);
         break;
       case "/settings":
-        navigate("/settings");
+        navigate(action);
         break;
       case "/terms":
-        navigate("/terms");
+        navigate(action);
         break;
-      case "logout":
+      case "/logout":
         try {
           const success = await logout();
           if (success) {
