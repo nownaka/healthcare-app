@@ -42,10 +42,6 @@ param containersEnvironmentVar = [
       value: readEnvironmentVariable('TRUSTED_ORIGINS', '')
     }
     {
-      name: 'POSTGRES_VERSION'
-      value: readEnvironmentVariable('POSTGRES_VERSION', '')
-    }
-    {
       name: 'POSTGRES_USER'
       value: readEnvironmentVariable('POSTGRES_USER', '')
     }
@@ -58,8 +54,8 @@ param containersEnvironmentVar = [
       value: readEnvironmentVariable('POSTGRES_HOST', '')
     }
     {
-      name: 'CONTAINER_NAME'
-      value: readEnvironmentVariable('CONTAINER_NAME', '')
+      name: 'PYTHONUNBUFFERED'
+      value: readEnvironmentVariable('CONTAINER_NAME', '1')
     }
   ]
   // Database
