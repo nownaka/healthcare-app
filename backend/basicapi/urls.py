@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import RegisterView, CustomTokenObtainPairView, UserProfileViewSet, WeightRecordViewSet, CalorieRecordViewSet, SleepRecordViewSet, AuthStatusView, CookieUserInfoView,LogoutView, DailyRecordUpsertAPIView
+from .views import RegisterView, CustomTokenObtainPairView, UserProfileViewSet, WeightRecordViewSet, CalorieRecordViewSet, SleepRecordViewSet, AuthStatusView, CookieUserInfoView,LogoutView, DailyRecordUpsertAPIView, CustomUserViewSet
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -8,6 +8,7 @@ router.register(r'user-profiles', UserProfileViewSet, basename='userprofile')
 router.register(r'weight-records', WeightRecordViewSet, basename='weightrecord')
 router.register(r'calorie-records', CalorieRecordViewSet, basename='calorierecord')
 router.register(r'sleep-records', SleepRecordViewSet, basename='sleeprecord')
+router.register(r"users", CustomUserViewSet)
 
 urlpatterns = [
     # ユーザー登録

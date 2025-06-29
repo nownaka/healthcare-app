@@ -2,6 +2,7 @@ import React from "react";
 import Header from "../organisms/Header";
 import ProfileEdit from "../organisms/ProfileEdit";
 import styled from "styled-components";
+import { useFetchUser } from "../organisms/useFetchUser";
 
 const Container = styled.div`
   display: flex;
@@ -13,12 +14,13 @@ const Container = styled.div`
 `;
 
 const SettingsPage: React.FC = () => {
+  const { user_id, email, name } = useFetchUser()
   return (
     <>
-      <Header title="設定" userName="健康 太郎" textColor="white" />
+      <Header title="設定" userName={name} textColor="white" />
       <Container>
         <h2>プロフィール編集</h2>
-        <ProfileEdit />
+        <ProfileEdit user_id={user_id} email={email} />
       </Container>
     </>
   );

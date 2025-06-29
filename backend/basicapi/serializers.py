@@ -19,14 +19,25 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = CustomUser.objects.create_user(**validated_data)
         return user
 
-    # def create(self, validated_data):
-    #     user = CustomUser.objects.create(
-    #         email=validated_data['email'],
-    #     )
-    #     user.set_password(validated_data['password'])
-    #     user.save()
-    #     return user
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = '__all__'
+        extra_kwargs = {"password": {"write_only": True}}
 
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+
+        # 通常フィールドはここで更新
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        # パスワードだけハッシュ
+        if password:
+            instance.set_password(password)   # make_password でも可
+
+        instance.save()
+        return instance
 # JWT トークン用シリアライザ
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
