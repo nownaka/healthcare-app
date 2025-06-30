@@ -13,11 +13,11 @@ param containersEnvironmentVar = [
   [
     {
       name: 'CHOKIDAR_USEPOLLING'
-      value: readEnvironmentVariable('REACT_CHOKIDAR_USEPOLLING', '')
+      value: readEnvironmentVariable('CHOKIDAR_USEPOLLING', '')
     }
     {
       name: 'WATCHPACK_POLLING'
-      value: readEnvironmentVariable('REACT_WATCHPACK_POLLING', '')
+      value: readEnvironmentVariable('WATCHPACK_POLLING', '')
     }
   ]
   // Backend
