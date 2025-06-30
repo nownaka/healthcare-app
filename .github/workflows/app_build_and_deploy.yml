@@ -94,13 +94,13 @@ jobs:
             az config set extension.use_dynamic_install=yes_without_prompt
             az containerapp update \
                 -n ${{ vars.AZURE_CONTAINER_NAME_FRONTEND }} \
-                -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
+                -g ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
                 --image ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
             az containerapp update \
                 -n ${{ vars.AZURE_CONTAINER_NAME_BACKEND }} \
-                -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
+                -g ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
                 --image ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_BACKEND }}:${{ github.sha }}
             az containerapp update \
                 -n ${{ vars.AZURE_CONTAINER_NAME_DB }} \
-                -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
+                -g ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
                 --image ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_DB }}:${{ github.sha }}
