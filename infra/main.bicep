@@ -138,7 +138,7 @@ var _ingress = [
   {
     // frontend
     external: true
-    targetPort: 3000
+    targetPort: 80
   }
   {
     // backend

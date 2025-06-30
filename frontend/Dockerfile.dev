@@ -42,5 +42,8 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-FROM nginx:alpine
-COPY --from=builder /app/build /usr/share/nginx/html
+# 公開ポート
+EXPOSE 3000
+
+# 起動コマンド
+CMD ["npm", "run", "start"]

@@ -27,7 +27,12 @@ services:
 
   # frontend
   frontend:
+    build:
+      context: ./frontend/app
+      dockerfile: ../Dockerfile.dev
     env_file:
       - ./frontend/.env.local
     volumes:
       - ./frontend/app:/app
+    ports:
+      - 3000:3000
