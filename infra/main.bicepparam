@@ -38,8 +38,8 @@ param containersEnvironmentVar = [
       value: readEnvironmentVariable('DJANGO_SUPERUSER_EMAIL', '')
     }
     {
-      name: 'TRUSTED_ORIGINS'
-      value: readEnvironmentVariable('TRUSTED_ORIGINS', '')
+      name: 'DJANGO_CORS_ALLOWED_ORIGINS'
+      value: readEnvironmentVariable('DJANGO_CORS_ALLOWED_ORIGINS', '')
     }
     {
       name: 'POSTGRES_USER'

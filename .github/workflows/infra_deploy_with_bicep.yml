@@ -21,7 +21,9 @@ permissions:
   id-token: write
   contents: read
 
-env: # 環境変数
+# 環境変数（環境依存なし）
+env:
+  # Azure
   APP_NAME: ${{ vars.APP_NAME }}
   SUFFIX: ${{ vars.SUFFIX }}
 
@@ -32,8 +34,25 @@ jobs:
     # 環境選択
     environment: ${{ github.ref_name == 'main' && 'Production' || github.ref_name == 'develop' && 'Development'}}
 
-    env: # 環境変数
+    # 環境変数（環境依存）
+    env:
+      # Azure
       APP_ENVIRONMENT: ${{ vars.APP_ENVIRONMENT }}
+      # Backend and Database
+      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      DJANGO_ALLOWED_HOSTS: ${{ vars.DJANGO_ALLOWED_HOSTS }}
+      DJANGO_CSRF_TRUSTED_ORIGINS: ${{ vars.DJANGO_CSRF_TRUSTED_ORIGINS }}
+      DJANGO_SUPERUSER_USERNAME: ${{ vars.DJANGO_SUPERUSER_USERNAME }}
+      DJANGO_SUPERUSER_PASSWORD: ${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
+      DJANGO_SUPERUSER_EMAIL: ${{ vars.DJANGO_SUPERUSER_EMAIL }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
+      DJANGO_CORS_ALLOWED_ORIGINS: ${{ vars.DJANGO_CORS_ALLOWED_ORIGINS}}
+      PYTHONUNBUFFERED: ${{ vars.PYTHONUNBUFFERED}}
+      # Frontend
+      CHOKIDAR_USEPOLLING: ${{ vars.REACT_CHOKIDAR_USEPOLLING }}
+      WATCHPACK_POLLING: ${{ vars.REACT_WATCHPACK_POLLING }}
 
     steps:
       # タイムスタンプ生成
@@ -62,6 +81,6 @@ jobs:
           inlineScript: |
             az deployment group create \
               --name Deploy-${{ env.APP_NAME }}_${{ env.TIMESTAMP }} \
-              --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
+              --resource-group ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
               --template-file infra/main.bicep \
               --parameters infra/main.bicepparam
