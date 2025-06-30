@@ -10,7 +10,16 @@ param suffix = empty(readEnvironmentVariable('SUFFIX', '')) ? null : readEnviron
 
 param containersEnvironmentVar = [
   // Frontend
-  []
+  [
+    {
+      name: 'CHOKIDAR_USEPOLLING'
+      value: readEnvironmentVariable('REACT_CHOKIDAR_USEPOLLING', '')
+    }
+    {
+      name: 'WATCHPACK_POLLING'
+      value: readEnvironmentVariable('REACT_WATCHPACK_POLLING', '')
+    }
+  ]
   // Backend
   [
     {
@@ -67,17 +76,6 @@ param containersEnvironmentVar = [
     {
       name: 'POSTGRES_PASSWORD'
       value: readEnvironmentVariable('POSTGRES_PASSWORD', '')
-    }
-  ]
-  // Frontend
-  [
-    {
-      name: 'CHOKIDAR_USEPOLLING'
-      value: readEnvironmentVariable('REACT_CHOKIDAR_USEPOLLING', '')
-    }
-    {
-      name: 'WATCHPACK_POLLING'
-      value: readEnvironmentVariable('REACT_WATCHPACK_POLLING', '')
     }
   ]
 ]
