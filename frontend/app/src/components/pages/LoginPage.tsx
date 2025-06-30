@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { config } from "../../config";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const LoginForm = () => {
     setError("");
 
     try {
-      await axios.post("http://localhost:8000/api/token/", formData, {
+      await axios.post(`${config.backendAPIBaseUrl}/api/token/`, formData, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true, // HttpOnly Cookieを利用するために必要
       });

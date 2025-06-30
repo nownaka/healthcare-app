@@ -1,6 +1,7 @@
-import axios from 'axios';
+import axios from "axios";
+import { config } from "../../src/config";
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = `${config.backendAPIBaseUrl}/api`;
 
 // APIクライアントの設定
 const apiClient = axios.create({
@@ -51,10 +52,10 @@ export interface DailyHealthData {
 // 体重記録を取得
 export const getWeightRecords = async (): Promise<WeightRecord[]> => {
   try {
-    const response = await apiClient.get('/weight-records/');
+    const response = await apiClient.get("/weight-records/");
     return response.data;
   } catch (error) {
-    console.error('体重記録の取得に失敗しました:', error);
+    console.error("体重記録の取得に失敗しました:", error);
     throw error;
   }
 };
@@ -62,10 +63,10 @@ export const getWeightRecords = async (): Promise<WeightRecord[]> => {
 // カロリー記録を取得
 export const getCalorieRecords = async (): Promise<CalorieRecord[]> => {
   try {
-    const response = await apiClient.get('/calorie-records/');
+    const response = await apiClient.get("/calorie-records/");
     return response.data;
   } catch (error) {
-    console.error('カロリー記録の取得に失敗しました:', error);
+    console.error("カロリー記録の取得に失敗しました:", error);
     throw error;
   }
 };
@@ -73,16 +74,18 @@ export const getCalorieRecords = async (): Promise<CalorieRecord[]> => {
 // 睡眠記録を取得
 export const getSleepRecords = async (): Promise<SleepRecord[]> => {
   try {
-    const response = await apiClient.get('/sleep-records/');
+    const response = await apiClient.get("/sleep-records/");
     return response.data;
   } catch (error) {
-    console.error('睡眠記録の取得に失敗しました:', error);
+    console.error("睡眠記録の取得に失敗しました:", error);
     throw error;
   }
 };
 
 // 全ての健康記録を取得して日別にまとめる
-export const getAllHealthRecords = async (): Promise<Record<string, DailyHealthData>> => {
+export const getAllHealthRecords = async (): Promise<
+  Record<string, DailyHealthData>
+> => {
   try {
     const [weightRecords, calorieRecords, sleepRecords] = await Promise.all([
       getWeightRecords(),
@@ -107,13 +110,15 @@ export const getAllHealthRecords = async (): Promise<Record<string, DailyHealthD
       if (!dailyData[date]) {
         dailyData[date] = { date };
       }
-      
+
       if (record.calorie > 0) {
         // 正のカロリー（摂取カロリー）
-        dailyData[date].calories = (dailyData[date].calories || 0) + record.calorie;
+        dailyData[date].calories =
+          (dailyData[date].calories || 0) + record.calorie;
       } else if (record.calorie < 0) {
         // 負のカロリー（運動による消費カロリー）
-        dailyData[date].exercise = (dailyData[date].exercise || 0) + Math.abs(record.calorie);
+        dailyData[date].exercise =
+          (dailyData[date].exercise || 0) + Math.abs(record.calorie);
       }
     });
 
@@ -128,7 +133,7 @@ export const getAllHealthRecords = async (): Promise<Record<string, DailyHealthD
 
     return dailyData;
   } catch (error) {
-    console.error('健康記録の取得に失敗しました:', error);
+    console.error("健康記録の取得に失敗しました:", error);
     throw error;
   }
 };

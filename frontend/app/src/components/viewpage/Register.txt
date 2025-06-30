@@ -10,7 +10,7 @@ const Register: React.FC = () => {
   const handleRegister = async () => {
     try {
       // リクエストの型とレスポンスの型を定義
-      const response = await axios.post<{ message: string }>('http://localhost:8000/api/register/', {
+      const response = await axios.post<{ message: string }>(`${config.backendAPIBaseUrl}/api/register/`, {
         email, // フィールド名を email に変更
         password,
       });
