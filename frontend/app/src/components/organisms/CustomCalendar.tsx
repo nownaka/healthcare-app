@@ -11,7 +11,11 @@ import {
   getOverallEvaluation,
   HealthEvaluation,
 } from "../../logic/HealthDataEvaluator";
-import { getAllHealthRecords, DailyHealthData } from "../../logic/healthRecordsApi";
+import {
+  getAllHealthRecords,
+  DailyHealthData,
+} from "../../logic/healthRecordsApi";
+import { config } from "../../config";
 
 type Value = CalendarProps["value"];
 
@@ -35,7 +39,10 @@ const StyledCalendar = styled(Calendar)`
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 `;
 
-const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacterTrigger }) => {
+const CustomCalendar: React.FC<CustomCalendarProps> = ({
+  onDateClick,
+  onCharacterTrigger,
+}) => {
   const [date, setDate] = useState<Value>(new Date());
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -49,7 +56,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacte
     const fetchExistingData = async () => {
       try {
         const healthRecords = await getAllHealthRecords();
-        
+
         const existingEntries: Record<string, Entry> = {};
         Object.keys(healthRecords).forEach((dateKey) => {
           const record = healthRecords[dateKey];
@@ -73,10 +80,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacte
     fetchExistingData();
   }, []);
 
-
   const handleDateChange: CalendarProps["onChange"] = (value, _event) => {
     const newDate = value as Date;
-    
+
     setDate(newDate);
     setSelectedDate(newDate);
     setShowModal(true);
@@ -113,9 +119,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacte
       }));
 
       // バックエンドに保存
-      await axios.post("http://localhost:8000/api/daily-records/", record, {
-        withCredentials: true,
-      });
+      await axios.post(
+        `${config.backendAPIBaseUrl}/api/daily-records/`,
+        record,
+        {
+          withCredentials: true,
+        }
+      );
 
       // データを再取得してカレンダーを更新
       const healthRecords = await getAllHealthRecords();
@@ -166,52 +176,61 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({ onDateClick, onCharacte
 
   return (
     <>
-    <div>
-      <StyledCalendar
-        onChange={handleDateChange}
-        value={date}
-        calendarType="gregory"
-        tileContent={({ date, view }) => {
-          if (view === "month") {
-            const dateKey = date.toISOString().split("T")[0];
-            const entry = entries[dateKey];
-            if (entry && (entry.weight || entry.sleep || entry.calories || entry.exercise)) {
-              return (
-                <div style={{ marginTop: "0.1rem", fontSize: "0.6em", lineHeight: "1.1" }}>
-                  {entry.weight && <div>体重: {entry.weight}kg</div>}
-                  {entry.sleep && <div>睡眠: {entry.sleep}h</div>}
-                  {entry.calories && <div>カロリー: {entry.calories}</div>}
-                  {entry.exercise && <div>運動: {entry.exercise}</div>}
-                </div>
-              );
+      <div>
+        <StyledCalendar
+          onChange={handleDateChange}
+          value={date}
+          calendarType="gregory"
+          tileContent={({ date, view }) => {
+            if (view === "month") {
+              const dateKey = date.toISOString().split("T")[0];
+              const entry = entries[dateKey];
+              if (
+                entry &&
+                (entry.weight ||
+                  entry.sleep ||
+                  entry.calories ||
+                  entry.exercise)
+              ) {
+                return (
+                  <div
+                    style={{
+                      marginTop: "0.1rem",
+                      fontSize: "0.6em",
+                      lineHeight: "1.1",
+                    }}
+                  >
+                    {entry.weight && <div>体重: {entry.weight}kg</div>}
+                    {entry.sleep && <div>睡眠: {entry.sleep}h</div>}
+                    {entry.calories && <div>カロリー: {entry.calories}</div>}
+                    {entry.exercise && <div>運動: {entry.exercise}</div>}
+                  </div>
+                );
+              }
             }
-          }
-          return null;
-        }}
-      />
-
-      {/* モーダル表示を RecordModal に一任 */}
-      {showModal && selectedDate && (
-        <RecordModal
-          dateLabel={selectedDate.toLocaleDateString()}
-          weight={weight}
-          sleep={sleepTime}
-          calories={calories}
-          exercise={exercise}
-          setWeight={setWeight}
-          setSleep={setSleepTime}
-          setCalories={setCalories}
-          setExercise={setExercise}
-          onSave={handleSave}
-          onCancel={handleCancel}
+            return null;
+          }}
         />
-      )}
-      
-    </div>
 
+        {/* モーダル表示を RecordModal に一任 */}
+        {showModal && selectedDate && (
+          <RecordModal
+            dateLabel={selectedDate.toLocaleDateString()}
+            weight={weight}
+            sleep={sleepTime}
+            calories={calories}
+            exercise={exercise}
+            setWeight={setWeight}
+            setSleep={setSleepTime}
+            setCalories={setCalories}
+            setExercise={setExercise}
+            onSave={handleSave}
+            onCancel={handleCancel}
+          />
+        )}
+      </div>
     </>
   );
 };
 
 export default CustomCalendar;
-

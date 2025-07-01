@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { config } from "../../config";
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -27,14 +28,14 @@ const SignupForm = () => {
       };
       // 情報登録
       const resisterResponse = await axios.post<{ message: string }>(
-        "http://localhost:8000/api/register/",
+        `${config.backendAPIBaseUrl}/api/register/`,
         loginData
       );
       console.log(resisterResponse.data.message);
 
       // トークン取得
       const token = await axios.post(
-        "http://localhost:8000/api/token/",
+        `${config.backendAPIBaseUrl}/api/token/`,
         loginData,
         {
           headers: { "Content-Type": "application/json" },
@@ -44,7 +45,7 @@ const SignupForm = () => {
 
       // トークンを利用して userId を取得する
       const userInfoResponse = await axios.get<{ user_id: string }>(
-        "http://localhost:8000/api/userinfo/",
+        `${config.backendAPIBaseUrl}/api/userinfo/`,
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true, // HttpOnly Cookieを利用するために必要
@@ -55,7 +56,7 @@ const SignupForm = () => {
 
       // その他の情報を登録
       const updateResponse = await axios.post(
-        "http://localhost:8000/api/user-profiles/",
+        `${config.backendAPIBaseUrl}/api/user-profiles/`,
         {
           user: userId,
           name: formData.name,

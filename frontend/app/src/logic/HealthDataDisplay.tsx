@@ -1,8 +1,9 @@
 // グラフを呼び出して情報を渡すコンポーネント
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import axios from 'axios';
-import HealthDataGraph from '../components/molecules/HealthDataGraph';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import axios from "axios";
+import HealthDataGraph from "../components/molecules/HealthDataGraph";
+import { config } from "../../src/config";
 
 // const Container = styled.div`
 //   padding: 20px;
@@ -26,12 +27,22 @@ const HealthDataDisplay: React.FC = () => {
   const fetchData = async () => {
     try {
       const userId = localStorage.getItem("user_id");
-  
-      const [weightResponse, calorieResponse, sleepResponse] = await Promise.all([
-        axios.get(`http://localhost:8000/api/weight-records/?user=${userId}`, { withCredentials: true }),
-        axios.get(`http://localhost:8000/api/calorie-records/?user=${userId}`, { withCredentials: true }),
-        axios.get(`http://localhost:8000/api/sleep-records/?user=${userId}`, { withCredentials: true })
-      ]);
+
+      const [weightResponse, calorieResponse, sleepResponse] =
+        await Promise.all([
+          axios.get(
+            `${config.backendAPIBaseUrl}/api/weight-records/?user=${userId}`,
+            { withCredentials: true }
+          ),
+          axios.get(
+            `${config.backendAPIBaseUrl}/api/calorie-records/?user=${userId}`,
+            { withCredentials: true }
+          ),
+          axios.get(
+            `${config.backendAPIBaseUrl}/api/sleep-records/?user=${userId}`,
+            { withCredentials: true }
+          ),
+        ]);
 
       // 運動量データはカロリーデータと同じものを使用
       const exerciseResponse = calorieResponse;
@@ -39,25 +50,25 @@ const HealthDataDisplay: React.FC = () => {
       // 体重データの変換
       const weightRecords = weightResponse.data.map((record: any) => ({
         date: record.recorded_at,
-        value: record.weight
+        value: record.weight,
       }));
 
       // カロリーデータの変換
       const calorieRecords = calorieResponse.data.map((record: any) => ({
         date: record.recorded_at,
-        value: record.calorie
+        value: record.calorie,
       }));
 
       // 睡眠データの変換
       const sleepRecords = sleepResponse.data.map((record: any) => ({
         date: record.recorded_at,
-        value: record.sleep_time
+        value: record.sleep_time,
       }));
 
       // 運動量データの変換（カロリーデータと同じ）
       const exerciseRecords = exerciseResponse.data.map((record: any) => ({
         date: record.recorded_at,
-        value: record.calorie
+        value: record.calorie,
       }));
 
       setWeightData(weightRecords);
@@ -65,7 +76,7 @@ const HealthDataDisplay: React.FC = () => {
       setExerciseData(exerciseRecords);
       setSleepData(sleepRecords);
     } catch (error) {
-      console.error('データの取得に失敗しました:', error);
+      console.error("データの取得に失敗しました:", error);
     } finally {
       setLoading(false);
     }
@@ -80,12 +91,12 @@ const HealthDataDisplay: React.FC = () => {
   }
 
   return (
-      <HealthDataGraph
-        weightData={weightData}
-        calorieData={calorieData}
-        exerciseData={exerciseData}
-        sleepData={sleepData}
-      />
+    <HealthDataGraph
+      weightData={weightData}
+      calorieData={calorieData}
+      exerciseData={exerciseData}
+      sleepData={sleepData}
+    />
   );
 };
 

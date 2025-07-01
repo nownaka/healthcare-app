@@ -51,11 +51,10 @@ const HomePage: React.FC = () => {
         }}
       />
     </LeftContainer>
-
-    <RightContainer>
-      <Dashboard />
-    </RightContainer>
-  </HomeContainer>
+        <RightContainer>
+          <Dashboard /> 
+        </RightContainer>
+      </HomeContainer>
 
   {/* キャラ表示：モーダルとは独立 */}
   {showCharacter && characterData && (

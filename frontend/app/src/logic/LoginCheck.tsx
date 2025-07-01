@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate, Navigate, Outlet} from 'react-router-dom';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, Navigate, Outlet } from "react-router-dom";
+import { config } from "../../src/config";
 
 const ProtectedPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -8,11 +9,12 @@ const ProtectedPage = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.post('http://localhost:8000/api/auth/status/',
-          {}, 
+        const response = await axios.post(
+          `${config.backendAPIBaseUrl}/api/auth/status/`,
+          {},
           {
             withCredentials: true, // Cookie を送信するために必要
-            headers: { 'Content-Type': 'application/json' },
+            headers: { "Content-Type": "application/json" },
           }
         );
         if (response.status === 200) {
@@ -20,7 +22,7 @@ const ProtectedPage = () => {
         }
       } catch (error) {
         setIsAuthenticated(false);
-      } 
+      }
     };
 
     checkAuth();

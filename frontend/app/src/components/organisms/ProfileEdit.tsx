@@ -2,20 +2,21 @@ import React, { useState, useEffect, FormEvent } from "react";
 import Input from "../atoms/Input";
 import Button from "../atoms/Button";
 import styled from "styled-components";
-import axios from "axios"
+import axios from "axios";
+import { config } from "../../config";
 
 const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;          /* 20px 相当 */
-  padding: 2rem;         /* 内側余白 32px */
-  background: #fff;      /* カード風 */
-  border-radius: 0.75rem;/* 12px */
+  gap: 1.25rem; /* 20px 相当 */
+  padding: 2rem; /* 内側余白 32px */
+  background: #fff; /* カード風 */
+  border-radius: 0.75rem; /* 12px */
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 
   /* 幅は可変。モバイルで 100%, 以降中央寄せ */
   width: min(420px, 100%);
-  margin-inline: auto;   /* 中央寄せ */
+  margin-inline: auto; /* 中央寄せ */
 
   /* 余白感を保ちつつスマホで詰まり過ぎないように */
   @media (max-width: 480px) {
@@ -28,22 +29,25 @@ interface ProfileEditProps {
   email: string;
 }
 
-const ProfileEdit: React.FC<ProfileEditProps> = ({ user_id, email: initialEmail }) => {
-  const [email, setEmail]       = useState(initialEmail);
+const ProfileEdit: React.FC<ProfileEditProps> = ({
+  user_id,
+  email: initialEmail,
+}) => {
+  const [email, setEmail] = useState(initialEmail);
   const [nickname, setNickname] = useState("");
-  const [height, setHeight]     = useState("");
-  const [goal, setGoal]         = useState("");
+  const [height, setHeight] = useState("");
+  const [goal, setGoal] = useState("");
   const [password, setPassword] = useState("");
   // 補助
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchProfile = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:8000/api/user-profiles/${user_id}/`,
+          `${config.backendAPIBaseUrl}/api/user-profiles/${user_id}/`,
           { withCredentials: true }
         );
         setNickname(data.nickname ?? "");
@@ -60,35 +64,35 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ user_id, email: initialEmail 
   }, [user_id]);
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();             // フォーム再読み込み防止
+    e.preventDefault(); // フォーム再読み込み防止
     setError(null);
     setSuccess(null);
 
     try {
       const userprofile = { nickname, height, goal };
       await axios.patch(
-        `http://localhost:8000/api/user-profiles/${user_id}/`,
+        `${config.backendAPIBaseUrl}/api/user-profiles/${user_id}/`,
         userprofile,
         { withCredentials: true }
       );
 
       const customUser = { email, ...(password && { password }) };
       await axios.patch(
-        `http://localhost:8000/api/users/${user_id}/`,
+        `${config.backendAPIBaseUrl}/api/users/${user_id}/`,
         customUser,
         { withCredentials: true }
-      )
+      );
       setSuccess("プロフィールを更新しました 🎉");
-    }catch (err) {
+    } catch (err) {
       console.error("プロフィール更新失敗:", err);
       setError("更新に失敗しました");
     }
-  }
+  };
 
   if (loading) return <p>Loading...</p>;
-  if (error)   return <p style={{ color: "red" }}>{error}</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
   return (
-    <FormContainer onSubmit={ handleSubmit}>
+    <FormContainer onSubmit={handleSubmit}>
       <label>メールアドレス</label>
       <Input
         type="email"

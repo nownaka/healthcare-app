@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { config } from "../../src/config";
 
 interface Profile {
   name: string;
@@ -26,14 +27,17 @@ export const useProfile = (): UseProfileReturn => {
     try {
       setLoading(true);
       const response = await axios.get<Profile>(
-        'http://localhost:8000/api/profile/',
+        `${config.backendAPIBaseUrl}/api/profile/`,
         { withCredentials: true }
       );
       setProfile(response.data);
       setError(null);
     } catch (error: any) {
-      console.error('Profile fetch error:', error.response?.data || error.message);
-      setError('プロフィールの取得に失敗しました。');
+      console.error(
+        "Profile fetch error:",
+        error.response?.data || error.message
+      );
+      setError("プロフィールの取得に失敗しました。");
     } finally {
       setLoading(false);
     }
@@ -43,15 +47,18 @@ export const useProfile = (): UseProfileReturn => {
     try {
       setLoading(true);
       const response = await axios.patch<Profile>(
-        'http://localhost:8000/api/profile/',
+        `${config.backendAPIBaseUrl}/api/profile/`,
         data,
         { withCredentials: true }
       );
       setProfile(response.data);
       setError(null);
     } catch (error: any) {
-      console.error('Profile update error:', error.response?.data || error.message);
-      setError('プロフィールの更新に失敗しました。');
+      console.error(
+        "Profile update error:",
+        error.response?.data || error.message
+      );
+      setError("プロフィールの更新に失敗しました。");
     } finally {
       setLoading(false);
     }

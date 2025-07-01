@@ -39,6 +39,7 @@ param template object = {
       image: 'mcr.microsoft.com/k8se/quickstart:latest'  
       command: []
       args: []
+      env: []
       resources: {
           cpu: '0.25'
           memory: '.5Gi'

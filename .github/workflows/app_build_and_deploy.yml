@@ -28,17 +28,6 @@ jobs:
     # Switch environments depending on branch
     environment: ${{ github.ref_name == 'main' && 'Production' || github.ref_name == 'develop' && 'Development'}}
 
-    env:
-      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-      DJANGO_ALLOWED_HOSTS: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
-      DJANGO_CSRF_TRUSTED_ORIGINS: ${{ secrets.DJANGO_CSRF_TRUSTED_ORIGINS }}
-      DJANGO_SUPERUSER_USERNAME: ${{ secrets.DJANGO_SUPERUSER_USERNAME }}
-      DJANGO_SUPERUSER_PASSWORD: ${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
-      DJANGO_SUPERUSER_EMAIL: ${{ secrets.DJANGO_SUPERUSER_EMAIL }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v2
@@ -75,12 +64,13 @@ jobs:
       - name: Build and push container image to registry
         run: |
           docker-compose -f ./docker-compose.yml build
-          docker tag ${{ env.REPOSITORY_NAME }}-frontend:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
-          docker tag ${{ env.REPOSITORY_NAME }}-backend:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_BACKEND }}:${{ github.sha }}
-          docker tag ${{env.REPOSITORY_NAME }}-database:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_DB }}:${{ github.sha }}
-          docker push ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
-          docker push ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_BACKEND }}:${{ github.sha }}
-          docker push ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_DB }}:${{ github.sha }}
+          docker images
+          docker tag ${{ env.REPOSITORY_NAME }}-frontend:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
+          docker tag ${{ env.REPOSITORY_NAME }}-backend:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_BACKEND }}:${{ github.sha }}
+          docker tag ${{env.REPOSITORY_NAME }}-database:latest ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_DB }}:${{ github.sha }}
+          docker push ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
+          docker push ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_BACKEND }}:${{ github.sha }}
+          docker push ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_DB }}:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -103,14 +93,14 @@ jobs:
           inlineScript: |
             az config set extension.use_dynamic_install=yes_without_prompt
             az containerapp update \
-                -n ${{ vars.CONTAINER_NAME_FRONTEND }} \
-                -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
-                --image ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
+                -n ${{ vars.AZURE_CONTAINER_NAME_FRONTEND }} \
+                -g ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
+                --image ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_FRONTEND }}:${{ github.sha }}
             az containerapp update \
-                -n ${{ vars.CONTAINER_NAME_BACKEND }} \
-                -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
-                --image ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_BACKEND }}:${{ github.sha }}
+                -n ${{ vars.AZURE_CONTAINER_NAME_BACKEND }} \
+                -g ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
+                --image ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_BACKEND }}:${{ github.sha }}
             az containerapp update \
-                -n ${{ vars.CONTAINER_NAME_DB }} \
-                -g ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} \
-                --image ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.CONTAINER_NAME_DB }}:${{ github.sha }}
+                -n ${{ vars.AZURE_CONTAINER_NAME_DB }} \
+                -g ${{ vars.AZURE_RESOURCE_GROUP_NAME }} \
+                --image ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/${{ vars.AZURE_CONTAINER_NAME_DB }}:${{ github.sha }}
