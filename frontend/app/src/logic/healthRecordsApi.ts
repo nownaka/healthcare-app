@@ -50,9 +50,10 @@ export interface DailyHealthData {
 }
 
 // 体重記録を取得
-export const getWeightRecords = async (): Promise<WeightRecord[]> => {
+export const getWeightRecords = async (userId?: number): Promise<WeightRecord[]> => {
   try {
-    const response = await apiClient.get("/weight-records/");
+    const url = userId ? `/weight-records/?user=${userId}` : "/weight-records/";
+    const response = await apiClient.get(url);
     return response.data;
   } catch (error) {
     console.error("体重記録の取得に失敗しました:", error);
@@ -61,9 +62,10 @@ export const getWeightRecords = async (): Promise<WeightRecord[]> => {
 };
 
 // カロリー記録を取得
-export const getCalorieRecords = async (): Promise<CalorieRecord[]> => {
+export const getCalorieRecords = async (userId?: number): Promise<CalorieRecord[]> => {
   try {
-    const response = await apiClient.get("/calorie-records/");
+    const url = userId ? `/calorie-records/?user=${userId}` : "/calorie-records/";
+    const response = await apiClient.get(url);
     return response.data;
   } catch (error) {
     console.error("カロリー記録の取得に失敗しました:", error);
@@ -72,9 +74,10 @@ export const getCalorieRecords = async (): Promise<CalorieRecord[]> => {
 };
 
 // 睡眠記録を取得
-export const getSleepRecords = async (): Promise<SleepRecord[]> => {
+export const getSleepRecords = async (userId?: number): Promise<SleepRecord[]> => {
   try {
-    const response = await apiClient.get("/sleep-records/");
+    const url = userId ? `/sleep-records/?user=${userId}` : "/sleep-records/";
+    const response = await apiClient.get(url);
     return response.data;
   } catch (error) {
     console.error("睡眠記録の取得に失敗しました:", error);
@@ -83,14 +86,14 @@ export const getSleepRecords = async (): Promise<SleepRecord[]> => {
 };
 
 // 全ての健康記録を取得して日別にまとめる
-export const getAllHealthRecords = async (): Promise<
+export const getAllHealthRecords = async (userId?: number): Promise<
   Record<string, DailyHealthData>
 > => {
   try {
     const [weightRecords, calorieRecords, sleepRecords] = await Promise.all([
-      getWeightRecords(),
-      getCalorieRecords(),
-      getSleepRecords(),
+      getWeightRecords(userId),
+      getCalorieRecords(userId),
+      getSleepRecords(userId),
     ]);
 
     const dailyData: Record<string, DailyHealthData> = {};
