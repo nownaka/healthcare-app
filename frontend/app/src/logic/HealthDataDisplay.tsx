@@ -1,13 +1,12 @@
 // グラフを呼び出して情報を渡すコンポーネント
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import axios from "axios";
 import HealthDataGraph from "../components/molecules/HealthDataGraph";
 import { config } from "../../src/config";
+import { useFetchUser } from "../components/organisms/useFetchUser";
 
 // const Container = styled.div`
 //   padding: 20px;
-//   display: flex;
 //   flex-direction: column;
 //   gap: 20px;
 // `;
@@ -23,6 +22,7 @@ const HealthDataDisplay: React.FC = () => {
   const [exerciseData, setExerciseData] = useState<HealthData[]>([]);
   const [sleepData, setSleepData] = useState<HealthData[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user_id, email, name } = useFetchUser();
 
   const fetchData = async () => {
     try {
@@ -31,15 +31,15 @@ const HealthDataDisplay: React.FC = () => {
       const [weightResponse, calorieResponse, sleepResponse] =
         await Promise.all([
           axios.get(
-            `${config.backendAPIBaseUrl}/api/weight-records/?user=${userId}`,
+            `${config.backendAPIBaseUrl}/api/weight-records/?user=${user_id}`,
             { withCredentials: true }
           ),
           axios.get(
-            `${config.backendAPIBaseUrl}/api/calorie-records/?user=${userId}`,
+            `${config.backendAPIBaseUrl}/api/calorie-records/?user=${user_id}`,
             { withCredentials: true }
           ),
           axios.get(
-            `${config.backendAPIBaseUrl}/api/sleep-records/?user=${userId}`,
+            `${config.backendAPIBaseUrl}/api/sleep-records/?user=${user_id}`,
             { withCredentials: true }
           ),
         ]);
