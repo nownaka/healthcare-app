@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { config } from "../../config"
 
 /* ---------- 型 ---------- */
 export type UserInfo = { user_id: number; email: string; name: string };
@@ -11,13 +12,16 @@ const UserContext = createContext<UserInfo | null | undefined>(undefined);
 /* ---------- 現在ログイン中のユーザーを取得 ---------- */
 const fetchCurrentUser = async (): Promise<UserInfo | null> => {
   try {
-    const { data: basic } = await axios.get("http://localhost:8000/api/userinfo/", {
-      withCredentials: true,
-      headers: { Accept: "application/json" },
-    });
+    const { data: basic } = await axios.get(
+      `${config.backendAPIBaseUrl}/api/userinfo/`,
+      {
+        withCredentials: true,
+        headers: { Accept: "application/json" },
+      }
+    );
 
     const { data: detail } = await axios.get(
-      `http://localhost:8000/api/user-profiles/${basic.user_id}/`,
+      `${config.backendAPIBaseUrl}/api/user-profiles/${basic.user_id}/`,
       { withCredentials: true, headers: { Accept: "application/json" } }
     );
 
@@ -32,7 +36,9 @@ const fetchCurrentUser = async (): Promise<UserInfo | null> => {
 };
 
 /* ---------- Provider ---------- */
-export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { data } = useQuery<UserInfo | null>({
     queryKey: ["currentUser"],
     queryFn: fetchCurrentUser,
@@ -50,10 +56,10 @@ const DEFAULT_USER: UserInfo = { user_id: 0, email: "", name: "" };
 export const useFetchUser = () => {
   const ctx = useContext(UserContext); // undefined | null | UserInfo
 
-  const isLoaded = ctx !== undefined;                       // フェッチ完了?
-  const isLoggedIn = ctx !== null && ctx !== undefined;     // 認証済み?
+  const isLoaded = ctx !== undefined; // フェッチ完了?
+  const isLoggedIn = ctx !== null && ctx !== undefined; // 認証済み?
 
-  const user = ctx ?? DEFAULT_USER;                         // ダミーユーザー
+  const user = ctx ?? DEFAULT_USER; // ダミーユーザー
 
   return { ...user, isLoaded, isLoggedIn };
 };

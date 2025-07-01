@@ -1,5 +1,6 @@
 // import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { config } from "../../src/config";
 
 /**
  * ログアウト処理を実行する関数
@@ -8,14 +9,16 @@ import { useNavigate } from "react-router-dom";
  * 3. セッションストレージからトークンを削除
  */
 export const logout = async () => {
-  
   try {
     // クッキー削除（パス指定）
     // Cookies.remove("access_token", { path: "/" });
     // Cookies.remove("refresh_token", { path: "/" });
 
     // サーバーへログアウトリクエスト送信
-    await fetch("http://localhost:8000/api/logout/", { method: "POST", credentials: "include" });
+    await fetch(`${config.backendAPIBaseUrl}/api/logout/`, {
+      method: "POST",
+      credentials: "include",
+    });
 
     // ローカルストレージとセッションストレージを削除
     localStorage.removeItem("accessToken");
@@ -27,7 +30,7 @@ export const logout = async () => {
 
     alert("ログアウトしました。aaaaaaaaaaaaaaaaaa");
     console.log("Logged out successfully.");
-    
+
     return true;
   } catch (error) {
     console.error("ログアウトに失敗しました:", error);
@@ -35,10 +38,9 @@ export const logout = async () => {
   }
 };
 
-
 export const useLogout = () => {
   return {
-    logout
+    logout,
   };
 };
 

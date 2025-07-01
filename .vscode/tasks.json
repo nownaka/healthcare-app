@@ -15,7 +15,11 @@
           "${workspaceFolder}/docker-compose.yml",
           "${workspaceFolder}/docker-compose.dev.yml"
         ],
-        "envFiles": ["backend/.env"],
+        "envFiles": [
+          "backend/.env.local",
+          "database/.env.local",
+          "frontend/.env.local"
+        ],
         "projectName": "healthcare-app"
       }
     },
@@ -31,7 +35,11 @@
           "${workspaceFolder}/docker-compose.yml",
           "${workspaceFolder}/docker-compose.dev.yml"
         ],
-        "envFiles": ["backend/.env"],
+        "envFiles": [
+          "backend/.env.local",
+          "database/.env.local",
+          "frontend/.env.local"
+        ],
         "projectName": "healthcare-app"
       }
     },
@@ -46,23 +54,23 @@
       "command": "python",
       "args": ["backend/manage.py", "makemigrations"],
       "group": {
-          "kind": "build",
-          "isDefault": true
+        "kind": "build",
+        "isDefault": true
       },
       "problemMatcher": [],
       "detail": "Djangoのmakemigrationsコマンドを実行します。"
-  },
-  {
+    },
+    {
       "label": "Django: Migrate",
       "type": "shell",
       "command": "python",
       "args": ["backend/manage.py", "migrate"],
       "group": {
-          "kind": "build",
-          "isDefault": false
+        "kind": "build",
+        "isDefault": false
       },
       "problemMatcher": [],
       "detail": "Djangoのmigrateコマンドを実行します。"
-  }
+    }
   ]
 }
