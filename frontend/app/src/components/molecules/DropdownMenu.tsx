@@ -3,19 +3,17 @@ import styled from "styled-components";
 
 type DropdownMenuProps = {
   onNavigate: (path: string) => void;
-  onLogout: () => void;
 };
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
   onNavigate,
-  onLogout,
 }) => {
   return (
     <MenuContainer>
       <MenuItem onClick={() => onNavigate("/home")}>🏠 ホーム</MenuItem>
       <MenuItem onClick={() => onNavigate("/settings")}>⚙️ 設定</MenuItem>
       <MenuItem onClick={() => onNavigate("/terms")}>📄 利用規約</MenuItem>
-      <MenuItem onClick={onLogout}>🚪 ログアウト</MenuItem>
+      <MenuItem onClick={() => onNavigate("/logout")}>🚪 ログアウト</MenuItem>
     </MenuContainer>
   );
 };

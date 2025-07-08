@@ -1,6 +1,7 @@
 // import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { config } from "../../src/config";
+import { useQueryClient } from "@tanstack/react-query";
 
 /**
  * ログアウト処理を実行する関数
@@ -8,7 +9,7 @@ import { config } from "../../src/config";
  * 2. ローカルストレージからトークンを削除
  * 3. セッションストレージからトークンを削除
  */
-export const logout = async () => {
+const Logout = async (): Promise<boolean> =>{
   try {
     // クッキー削除（パス指定）
     // Cookies.remove("access_token", { path: "/" });
@@ -39,9 +40,23 @@ export const logout = async () => {
 };
 
 export const useLogout = () => {
-  return {
-    logout,
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const logout = async (): Promise<boolean> => {
+    const success = await Logout();
+    if (success) {
+      // React Query のキャッシュをクリア
+      queryClient.clear();
+      // ログイン画面へリダイレクト
+      navigate("/");
+      alert("ログアウトしました。");
+    } else {
+      alert("ログアウトに失敗しました。再度お試しください。");
+    }
+    return success;
   };
+
+  return { logout };
 };
 
 export default useLogout;

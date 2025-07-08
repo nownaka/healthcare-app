@@ -8,6 +8,7 @@ import CharacterDisplay from "../molecules/CharacterDisplay";
 import {
   HealthEvaluation,
 } from "../../logic/HealthDataEvaluator";
+import { useQueryClient } from "@tanstack/react-query";
 
 const HomeContainer = styled.div`
   display: flex;
@@ -30,10 +31,28 @@ const RightContainer = styled.div`
 `;
 
 const HomePage: React.FC = () => {
-  const { user_id, email, name } = useFetchUser();
+  const { user_id, email, name, isLoaded, isLoggedIn } = useFetchUser();
+  const queryClient = useQueryClient();
   const [characterData, setCharacterData] = useState<HealthEvaluation | null>(null);
   const [showCharacter, setShowCharacter] = useState(false);
   const [playKey, setPlayKey] = useState(0); // audioPathが同じでも強制再再生
+
+  useEffect(() => {
+    if (!isLoggedIn) return;  // ログアウト時や未認証時は何もしない
+
+    (async () => {
+      await queryClient.refetchQueries({
+        queryKey: ["currentUser"],
+        exact: true,
+      });
+    })();
+  }, [isLoaded, queryClient]);
+  // ────────────────────────────────────────────────
+
+  // ローディング中はスピナー等を返す
+  if (!isLoaded) {
+    return <div>Loading user info…</div>;
+  }
 
   return (
     <>
@@ -52,7 +71,7 @@ const HomePage: React.FC = () => {
       />
     </LeftContainer>
         <RightContainer>
-          <Dashboard /> 
+          <Dashboard />
         </RightContainer>
       </HomeContainer>
 
