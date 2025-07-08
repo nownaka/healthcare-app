@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { config } from "../../config"
 
@@ -7,7 +7,13 @@ import { config } from "../../config"
 export type UserInfo = { user_id: number; email: string; name: string };
 
 /* ---------- Context ---------- */
-const UserContext = createContext<UserInfo | null | undefined>(undefined);
+type UserContextType = {
+  user: UserInfo | null | undefined;
+  refetchUser: () => void;
+  clearUserCache: () => void;
+};
+
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
 /* ---------- 現在ログイン中のユーザーを取得 ---------- */
 const fetchCurrentUser = async (): Promise<UserInfo | null> => {
@@ -39,29 +45,63 @@ const fetchCurrentUser = async (): Promise<UserInfo | null> => {
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { data } = useQuery<UserInfo | null>({
+  const queryClient = useQueryClient();
+  
+  const { data, refetch } = useQuery<UserInfo | null>({
     queryKey: ["currentUser"],
     queryFn: fetchCurrentUser,
     retry: false,
     staleTime: 0,
+    gcTime: 0,                  // キャッシュを即座に削除（新しいReact Queryでは gcTime）
     refetchOnMount: "always",    // マウントごとに必ず再フェッチ
     refetchOnWindowFocus: true,
+    refetchOnReconnect: true,    // 再接続時にリフェッチ
   });
 
-  // data = undefined (未フェッチ) | null (未ログイン) | UserInfo
-  return <UserContext.Provider value={data}>{children}</UserContext.Provider>;
+  const refetchUser = async () => {
+    // より確実にリフェッチを実行
+    await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+    await refetch();
+  };
+
+  const clearUserCache = async () => {
+    // より確実にキャッシュをクリア
+    queryClient.removeQueries({ queryKey: ["currentUser"] });
+    queryClient.setQueryData(["currentUser"], null);
+    await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+  };
+
+  const contextValue: UserContextType = {
+    user: data,
+    refetchUser,
+    clearUserCache,
+  };
+
+  return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };
 
 /* ---------- フック ---------- */
 const DEFAULT_USER: UserInfo = { user_id: 0, email: "", name: "" };
 
 export const useFetchUser = () => {
-  const ctx = useContext(UserContext); // undefined | null | UserInfo
+  const ctx = useContext(UserContext);
+  
+  if (!ctx) {
+    throw new Error("useFetchUser must be used within UserProvider");
+  }
 
-  const isLoaded = ctx !== undefined; // フェッチ完了?
-  const isLoggedIn = ctx !== null && ctx !== undefined; // 認証済み?
+  const { user, refetchUser, clearUserCache } = ctx;
 
-  const user = ctx ?? DEFAULT_USER; // ダミーユーザー
+  const isLoaded = user !== undefined; // フェッチ完了?
+  const isLoggedIn = user !== null && user !== undefined; // 認証済み?
 
-  return { ...user, isLoaded, isLoggedIn };
+  const userData = user ?? DEFAULT_USER; // ダミーユーザー
+
+  return { 
+    ...userData, 
+    isLoaded, 
+    isLoggedIn, 
+    refetchUser, 
+    clearUserCache 
+  };
 };

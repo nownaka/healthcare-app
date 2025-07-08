@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { useFetchUser } from "../organisms/useFetchUser";
 import { config } from "../../config";
 
 const LoginForm = () => {
@@ -10,6 +12,8 @@ const LoginForm = () => {
   });
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { clearUserCache, refetchUser } = useFetchUser();
 
   const [error, setError] = useState("");
 
@@ -24,7 +28,7 @@ const LoginForm = () => {
         withCredentials: true, // HttpOnly Cookieを利用するために必要
       });
 
-      // ホーム画面へ遷移する
+
       navigate("/home");
       console.log("Logged in successfully.");
     } catch (error) {

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { useFetchUser } from "../components/organisms/useFetchUser";
 import { config } from "../../src/config";
 
 interface UseAuthReturn {
@@ -13,6 +15,8 @@ interface UseAuthReturn {
 export const useAuth = (): UseAuthReturn => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { clearUserCache, refetchUser } = useFetchUser();
 
   const login = async (email: string, password: string) => {
     try {
@@ -24,6 +28,10 @@ export const useAuth = (): UseAuthReturn => {
           withCredentials: true,
         }
       );
+
+      // ログイン成功後、古いユーザー情報をクリアして新しい情報を取得
+      await clearUserCache();
+      await refetchUser();
 
       console.log("Logged in successfully.");
       navigate("/home");
@@ -50,14 +58,18 @@ export const useAuth = (): UseAuthReturn => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     try {
       // HttpOnly Cookieの削除はバックエンドで行う
-      axios.post(
+      await axios.post(
         `${config.backendAPIBaseUrl}/api/logout/`,
         {},
         { withCredentials: true }
       );
+      
+      // ログアウト後、ユーザー情報をクリア
+      await clearUserCache();
+      
       navigate("/login");
     } catch (error: any) {
       console.error("Logout error:", error);

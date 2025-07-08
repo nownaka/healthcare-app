@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { useFetchUser } from "../organisms/useFetchUser";
 import { config } from "../../config";
 
 const SignupForm = () => {
@@ -15,6 +17,8 @@ const SignupForm = () => {
   });
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { clearUserCache, refetchUser } = useFetchUser();
 
   // Sign Up 処理
   const handleSignUp = async (formEvent: React.FormEvent) => {
@@ -70,6 +74,10 @@ const SignupForm = () => {
           withCredentials: true, // HttpOnly Cookieを利用するために必要
         }
       );
+
+      // サインアップ成功後、古いユーザー情報をクリアして新しい情報を取得
+      await clearUserCache();
+      await refetchUser();
 
       // ホーム画面へ遷移する。
       navigate("/home");
