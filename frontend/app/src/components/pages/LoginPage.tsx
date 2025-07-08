@@ -27,7 +27,9 @@ const LoginForm = () => {
         headers: { "Content-Type": "application/json" },
         withCredentials: true, // HttpOnly Cookieを利用するために必要
       });
-
+      
+      await clearUserCache();
+      await refetchUser();
 
       navigate("/home");
       console.log("Logged in successfully.");
