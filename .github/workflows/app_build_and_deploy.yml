@@ -28,6 +28,12 @@ jobs:
     # Switch environments depending on branch
     environment: ${{ github.ref_name == 'main' && 'Production' || github.ref_name == 'develop' && 'Development'}}
 
+    # 環境変数（環境依存）
+    env:
+      # Frontend
+      REACT_APP_BACKEND_API_HOST_NAME: ${{ vars.REACT_APP_BACKEND_API_HOST_NAME }}
+      REACT_APP_BACKEND_API_PORT: ${{ vars.REACT_APP_BACKEND_API_PORT }}
+
     steps:
       - name: Checkout to the branch
         uses: actions/checkout@v2

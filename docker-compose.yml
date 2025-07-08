@@ -28,6 +28,9 @@ services:
     build:
       context: ./frontend/app
       dockerfile: ../Dockerfile
+      args:
+        REACT_APP_BACKEND_API_HOST_NAME: ${REACT_APP_BACKEND_API_HOST_NAME}
+        REACT_APP_BACKEND_API_PORT: ${REACT_APP_BACKEND_API_PORT}
     restart: always
     ports:
       - "80:80"
