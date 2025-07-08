@@ -44,23 +44,26 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def partial_update(self, request, *args, **kwargs):
-        response = super().partial_update(request, *args, **kwargs)
+        try:
+            response = super().partial_update(request, *args, **kwargs)
 
-        # パスワード・メール更新後に新トークン発行
-        user = self.get_object()
-        refresh = RefreshToken.for_user(user)
-        access  = refresh.access_token
+            # パスワード・メール更新後に新トークン発行
+            user = self.get_object()
+            refresh = RefreshToken.for_user(user)
+            access  = refresh.access_token
 
-        res = Response(response.data, status=status.HTTP_200_OK)
-        res.set_cookie(
-            "access", str(access),
-            httponly=True, samesite="None", secure=False,
-        )
-        res.set_cookie(
-            "refresh", str(refresh),
-            httponly=True, samesite="None", secure=False,
-        )
-        return res
+            res = Response(response.data, status=status.HTTP_200_OK)
+            res.set_cookie(
+                "access", str(access),
+                httponly=True, samesite="None", secure=False,
+            )
+            res.set_cookie(
+                "refresh", str(refresh),
+                httponly=True, samesite="None", secure=False,
+            )
+            return res
+        except Exception as err:
+            return Response({"detail": f"更新に失敗しました: {err}"}, status=status.HTTP_400_BAD_REQUEST)
 # JWT トークン発行ビュー
 class CustomTokenObtainPairView(BaseTokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -98,16 +101,16 @@ class CustomTokenObtainPairView(BaseTokenObtainPairView):
             max_age=86400            # 例として24時間有効
         )
         return response
-#ログアウト 
+#ログアウト
 class LogoutView(APIView):
     def post(self, request):
         response = Response({"message": "Logged out successfully."}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')  # クッキーの削除
         response.delete_cookie('refresh_token')  # クッキーの削除
 
-        
+
         return response
-    
+
     # プロフィールビューセット
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
@@ -242,7 +245,7 @@ class DailyRecordUpsertAPIView(APIView):
         except (TypeError, ValueError):
             return Response({"detail": "`sleep_time` は数値で指定してください"},
                             status=status.HTTP_400_BAD_REQUEST)
-                            
+
         calories = data.get("calories")
         exercise = data.get("exercise")
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import SettingImage from "./setting.svg";
-import { logout } from "../../logic/Logout";
+import useLogout from "../../logic/Logout";
 import DropdownMenu from "../molecules/DropdownMenu";
 
 type HeaderProps = {
@@ -21,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigate = useNavigate();
+  const { logout } = useLogout();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -85,9 +86,6 @@ const Header: React.FC<HeaderProps> = ({
         <DropdownMenu
           onNavigate={(menu: string) => {
             handleMenuAction(menu);
-          }}
-          onLogout={() => {
-            handleMenuAction("logout");
           }}
         />
       )}

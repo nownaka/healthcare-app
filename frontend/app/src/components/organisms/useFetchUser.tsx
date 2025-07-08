@@ -43,7 +43,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     queryKey: ["currentUser"],
     queryFn: fetchCurrentUser,
     retry: false,
-    staleTime: 1000 * 60 * 10, // 10 分
+    staleTime: 0,
+    refetchOnMount: "always",    // マウントごとに必ず再フェッチ
+    refetchOnWindowFocus: true,
   });
 
   // data = undefined (未フェッチ) | null (未ログイン) | UserInfo
