@@ -56,6 +56,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     refetchOnMount: "always",    // マウントごとに必ず再フェッチ
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,    // 再接続時にリフェッチ
+
   });
 
   const refetchUser = async () => {
