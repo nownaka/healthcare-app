@@ -3,7 +3,7 @@ import Header from "../organisms/Header";
 import CustomCalendar from "../organisms/CustomCalendar";
 import styled from "styled-components";
 import Dashboard from "../organisms/Dashboard";
-import { useFetchUser } from "../organisms/useFetchUser";
+import { usePollingCurrentUser } from "../organisms/useFetchUser";
 import CharacterDisplay from "../molecules/CharacterDisplay";
 import {
   HealthEvaluation,
@@ -31,7 +31,7 @@ const RightContainer = styled.div`
 `;
 
 const HomePage: React.FC = () => {
-  const { user_id, email, name, isLoaded, isLoggedIn } = useFetchUser();
+  const { user, isLoaded, isLoggedIn } = usePollingCurrentUser();
   const queryClient = useQueryClient();
   const [characterData, setCharacterData] = useState<HealthEvaluation | null>(null);
   const [showCharacter, setShowCharacter] = useState(false);
@@ -57,7 +57,7 @@ const HomePage: React.FC = () => {
   return (
     <>
       {/* ✅ ヘッダー管理は HeaderContainer に移行 */}
-      <Header title="健康管理アプリ" userName={name} textColor="white" />
+      <Header title="健康管理アプリ" userName={user!.name} textColor="white" />
 
   <HomeContainer>
     <LeftContainer>
