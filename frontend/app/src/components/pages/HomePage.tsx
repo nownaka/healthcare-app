@@ -9,6 +9,7 @@ import {
   HealthEvaluation,
 } from "../../logic/HealthDataEvaluator";
 import { useQueryClient } from "@tanstack/react-query";
+import { Navigate } from "react-router-dom";
 
 const HomeContainer = styled.div`
   display: flex;
@@ -36,27 +37,24 @@ const HomePage: React.FC = () => {
   const [characterData, setCharacterData] = useState<HealthEvaluation | null>(null);
   const [showCharacter, setShowCharacter] = useState(false);
   const [playKey, setPlayKey] = useState(0); // audioPathが同じでも強制再再生
-
-  useEffect(() => {
-    if (!isLoggedIn) return;  // ログアウト時や未認証時は何もしない
-
-    (async () => {
-      await queryClient.refetchQueries({
-        queryKey: ["currentUser"],
-        exact: true,
-      });
-    })();
-  }, [isLoaded, queryClient]);
-  // ────────────────────────────────────────────────
-
-  // ローディング中はスピナー等を返す
+  // ——— ローディング／未認証はここでガード ———
   if (!isLoaded) {
     return <div>Loading user info…</div>;
   }
+  if (!isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+
+  useEffect(() => {
+    // ログイン済みが確定したタイミングで currentUser を再フェッチ
+    queryClient.refetchQueries({
+      queryKey: ["currentUser"],
+      exact: true,
+    });
+  }, [isLoggedIn, queryClient]);
 
   return (
     <>
-      {/* ✅ ヘッダー管理は HeaderContainer に移行 */}
       <Header title="健康管理アプリ" userName={user!.name} textColor="white" />
 
   <HomeContainer>
