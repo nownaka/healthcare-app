@@ -2,7 +2,8 @@ import React from "react";
 import Header from "../organisms/Header";
 import ProfileEdit from "../organisms/ProfileEdit";
 import styled from "styled-components";
-import { useFetchUser } from "../organisms/useFetchUser";
+import { usePollingCurrentUser } from "../organisms/useFetchUser";
+import { Navigate } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
@@ -14,13 +15,22 @@ const Container = styled.div`
 `;
 
 const SettingsPage: React.FC = () => {
-  const { user_id, email, name } = useFetchUser()
+  const { user, isLoaded, isLoggedIn } = usePollingCurrentUser()
+
+  if (!isLoaded) {
+    return <div>読み込み中…</div>;
+  }
+
+  if (!isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <>
-      <Header title="設定" userName={name} textColor="white" />
+      <Header title="設定" userName={user!.name} textColor="white" />
       <Container>
         <h2>プロフィール編集</h2>
-        <ProfileEdit user_id={user_id} email={email} />
+        <ProfileEdit user_id={user!.user_id} email={user!.email} />
       </Container>
     </>
   );

@@ -3,12 +3,13 @@ import Header from "../organisms/Header";
 import CustomCalendar from "../organisms/CustomCalendar";
 import styled from "styled-components";
 import Dashboard from "../organisms/Dashboard";
-import { useFetchUser } from "../organisms/useFetchUser";
+import { usePollingCurrentUser } from "../organisms/useFetchUser";
 import CharacterDisplay from "../molecules/CharacterDisplay";
 import {
   HealthEvaluation,
 } from "../../logic/HealthDataEvaluator";
 import { useQueryClient } from "@tanstack/react-query";
+import { Navigate } from "react-router-dom";
 
 const HomeContainer = styled.div`
   display: flex;
@@ -31,33 +32,30 @@ const RightContainer = styled.div`
 `;
 
 const HomePage: React.FC = () => {
-  const { user_id, email, name, isLoaded, isLoggedIn } = useFetchUser();
+  const { user, isLoaded, isLoggedIn } = usePollingCurrentUser();
   const queryClient = useQueryClient();
   const [characterData, setCharacterData] = useState<HealthEvaluation | null>(null);
   const [showCharacter, setShowCharacter] = useState(false);
   const [playKey, setPlayKey] = useState(0); // audioPathが同じでも強制再再生
-
-  useEffect(() => {
-    if (!isLoggedIn) return;  // ログアウト時や未認証時は何もしない
-
-    (async () => {
-      await queryClient.refetchQueries({
-        queryKey: ["currentUser"],
-        exact: true,
-      });
-    })();
-  }, [isLoaded, queryClient]);
-  // ────────────────────────────────────────────────
-
-  // ローディング中はスピナー等を返す
+  // ——— ローディング／未認証はここでガード ———
   if (!isLoaded) {
     return <div>Loading user info…</div>;
   }
+  if (!isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+
+  useEffect(() => {
+    // ログイン済みが確定したタイミングで currentUser を再フェッチ
+    queryClient.refetchQueries({
+      queryKey: ["currentUser"],
+      exact: true,
+    });
+  }, [isLoggedIn, queryClient]);
 
   return (
     <>
-      {/* ✅ ヘッダー管理は HeaderContainer に移行 */}
-      <Header title="健康管理アプリ" userName={name} textColor="white" />
+      <Header title="健康管理アプリ" userName={user!.name} textColor="white" />
 
   <HomeContainer>
     <LeftContainer>

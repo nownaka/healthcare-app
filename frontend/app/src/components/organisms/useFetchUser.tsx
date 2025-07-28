@@ -1,13 +1,12 @@
-import React, { createContext, useContext } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { config } from "../../config"
 
 /* ---------- 型 ---------- */
 export type UserInfo = { user_id: number; email: string; name: string };
 
-/* ---------- Context ---------- */
-const UserContext = createContext<UserInfo | null | undefined>(undefined);
+const POLL_INTERVAL = 5_000; // 5秒ごとに再取得
 
 /* ---------- 現在ログイン中のユーザーを取得 ---------- */
 const fetchCurrentUser = async (): Promise<UserInfo | null> => {
@@ -35,33 +34,49 @@ const fetchCurrentUser = async (): Promise<UserInfo | null> => {
   }
 };
 
-/* ---------- Provider ---------- */
-export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const { data } = useQuery<UserInfo | null>({
-    queryKey: ["currentUser"],
-    queryFn: fetchCurrentUser,
-    retry: false,
-    staleTime: 0,
-    refetchOnMount: "always",    // マウントごとに必ず再フェッチ
-    refetchOnWindowFocus: true,
-  });
+export function usePollingCurrentUser() {
+  const queryClient = useQueryClient();
 
-  // data = undefined (未フェッチ) | null (未ログイン) | UserInfo
-  return <UserContext.Provider value={data}>{children}</UserContext.Provider>;
-};
+  // キャッシュにあれば初期値としてセット
+  const [user, setUser] = useState<UserInfo | null | undefined>(
+    () => queryClient.getQueryData<UserInfo | null>(["currentUser"])
+  );
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const isLoggedIn = user !== null && user !== undefined;
 
-/* ---------- フック ---------- */
-const DEFAULT_USER: UserInfo = { user_id: 0, email: "", name: "" };
+  useEffect(() => {
+    let mounted = true;
 
-export const useFetchUser = () => {
-  const ctx = useContext(UserContext); // undefined | null | UserInfo
+    const tick = async () => {
+      try {
+        // fetchQuery はキャッシュが古い場合のみ、あるいは常に → 新しい fetch を実行し、
+        // キャッシュにも結果を入れてくれる
+        await queryClient.fetchQuery<UserInfo | null>({
+          queryKey: ["currentUser"],
+          queryFn: fetchCurrentUser,
+          retry: false,
+        });
+        if (!mounted) return;
 
-  const isLoaded = ctx !== undefined; // フェッチ完了?
-  const isLoggedIn = ctx !== null && ctx !== undefined; // 認証済み?
+        // キャッシュから最新データを読み出し
+        const latest = queryClient.getQueryData<UserInfo | null>(["currentUser"]);
+        setUser(latest);
+        setIsLoaded(true);
+      } catch {
+        // 必要ならエラー処理
+      }
+    };
 
-  const user = ctx ?? DEFAULT_USER; // ダミーユーザー
+    // 最初の取得
+    tick();
+    // インターバルで定期実行
+    const id = setInterval(tick, POLL_INTERVAL);
 
-  return { ...user, isLoaded, isLoggedIn };
-};
+    return () => {
+      mounted = false;
+      clearInterval(id);
+    };
+  }, [queryClient]);
+
+  return { user, isLoaded, isLoggedIn };
+}

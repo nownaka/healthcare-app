@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import HealthDataGraph from "../components/molecules/HealthDataGraph";
 import { config } from "../../src/config";
-import { useFetchUser } from "../components/organisms/useFetchUser";
+import { usePollingCurrentUser } from "../components/organisms/useFetchUser";
 
 // const Container = styled.div`
 //   padding: 20px;
@@ -22,24 +22,23 @@ const HealthDataDisplay: React.FC = () => {
   const [exerciseData, setExerciseData] = useState<HealthData[]>([]);
   const [sleepData, setSleepData] = useState<HealthData[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user_id, email, name } = useFetchUser();
+  const { user, isLoaded, isLoggedIn } = usePollingCurrentUser()
 
   const fetchData = async () => {
     try {
-      const userId = localStorage.getItem("user_id");
 
       const [weightResponse, calorieResponse, sleepResponse] =
         await Promise.all([
           axios.get(
-            `${config.backendAPIBaseUrl}/api/weight-records/?user=${user_id}`,
+            `${config.backendAPIBaseUrl}/api/weight-records/?user=${user!.user_id}`,
             { withCredentials: true }
           ),
           axios.get(
-            `${config.backendAPIBaseUrl}/api/calorie-records/?user=${user_id}`,
+            `${config.backendAPIBaseUrl}/api/calorie-records/?user=${user!.user_id}`,
             { withCredentials: true }
           ),
           axios.get(
-            `${config.backendAPIBaseUrl}/api/sleep-records/?user=${user_id}`,
+            `${config.backendAPIBaseUrl}/api/sleep-records/?user=${user!.user_id}`,
             { withCredentials: true }
           ),
         ]);

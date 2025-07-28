@@ -16,7 +16,7 @@ import {
   DailyHealthData,
 } from "../../logic/healthRecordsApi";
 import { config } from "../../config";
-import { useFetchUser } from "./useFetchUser";
+import { usePollingCurrentUser } from "./useFetchUser";
 
 type Value = CalendarProps["value"];
 
@@ -44,7 +44,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   onDateClick,
   onCharacterTrigger,
 }) => {
-  const { user_id, isLoaded, isLoggedIn } = useFetchUser();
+  const { user, isLoaded, isLoggedIn } = usePollingCurrentUser()
   const [date, setDate] = useState<Value>(new Date());
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -57,14 +57,14 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   // ユーザー情報が読み込まれ、ログインしている場合にデータを取得
   useEffect(() => {
     const fetchExistingData = async () => {
-      if (!isLoaded || !isLoggedIn || !user_id) {
+      if (!isLoaded || !isLoggedIn || user!.user_id) {
         console.log("ユーザー情報が読み込まれていないか、ログインしていません");
         return;
       }
 
       try {
-        console.log(`ユーザーID ${user_id} のデータを取得中...`);
-        const healthRecords = await getAllHealthRecords(user_id);
+        console.log(`ユーザーID ${user!.user_id} のデータを取得中...`);
+        const healthRecords = await getAllHealthRecords(user!.user_id);
 
         const existingEntries: Record<string, Entry> = {};
         Object.keys(healthRecords).forEach((dateKey) => {
@@ -88,7 +88,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     };
 
     fetchExistingData();
-  }, [isLoaded, isLoggedIn, user_id]);
+  }, [isLoaded, isLoggedIn, user!.user_id]);
 
   const handleDateChange: CalendarProps["onChange"] = (value, _event) => {
     const newDate = value as Date;
@@ -138,7 +138,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       );
 
       // データを再取得してカレンダーを更新
-      const healthRecords = await getAllHealthRecords(user_id);
+      const healthRecords = await getAllHealthRecords(user!.user_id);
       const existingEntries: Record<string, Entry> = {};
       Object.keys(healthRecords).forEach((dateKey) => {
         const record = healthRecords[dateKey];
