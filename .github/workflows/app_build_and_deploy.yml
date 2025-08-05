@@ -31,6 +31,7 @@ jobs:
     # 環境変数（環境依存）
     env:
       # Frontend
+      REACT_APP_BACKEND_API_PROTOCOL: ${{ vars.REACT_APP_BACKEND_API_PROTOCOL}}
       REACT_APP_BACKEND_API_HOST_NAME: ${{ vars.REACT_APP_BACKEND_API_HOST_NAME }}
       REACT_APP_BACKEND_API_PORT: ${{ vars.REACT_APP_BACKEND_API_PORT }}
 
