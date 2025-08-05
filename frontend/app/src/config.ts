@@ -7,12 +7,14 @@ const checkEnvValue = (envName: string): string => {
   return value as string;
 };
 
+const backendApiProtocol = process.env.REACT_APP_BACKEND_API_PROTOCOL || "http";
 const backendAPIhostName =
   process.env.REACT_APP_BACKEND_API_HOST_NAME || "localhost";
 const backendAPIPort = process.env.REACT_APP_BACKEND_API_PORT || "8000";
-const backendAPIBaseUrl = `http://${backendAPIhostName}:${backendAPIPort}`;
+const backendAPIBaseUrl = `${backendApiProtocol}://${backendAPIhostName}:${backendAPIPort}`;
 
 export const config = {
+  backendApiProtocol,
   backendAPIhostName,
   backendAPIPort,
   backendAPIBaseUrl,
