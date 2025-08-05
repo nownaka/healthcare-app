@@ -37,13 +37,6 @@ const HomePage: React.FC = () => {
   const [characterData, setCharacterData] = useState<HealthEvaluation | null>(null);
   const [showCharacter, setShowCharacter] = useState(false);
   const [playKey, setPlayKey] = useState(0); // audioPathが同じでも強制再再生
-  // ——— ローディング／未認証はここでガード ———
-  if (!isLoaded) {
-    return <div>Loading user info…</div>;
-  }
-  if (!isLoggedIn) {
-    return <Navigate to="/" replace />;
-  }
 
   useEffect(() => {
     // ログイン済みが確定したタイミングで currentUser を再フェッチ
@@ -52,6 +45,13 @@ const HomePage: React.FC = () => {
       exact: true,
     });
   }, [isLoggedIn, queryClient]);
+
+  if (!isLoaded) {
+    return <div>Loading user info…</div>;
+  }
+  if (!isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <>
